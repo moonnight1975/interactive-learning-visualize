@@ -85,10 +85,10 @@ export default function ModeSelection() {
                         className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#050510]"
                         exit={{ opacity: 0 }}
                     >
-                        <h1 ref={textRef} className="text-6xl md:text-9xl font-black text-transparent bg-clip-text bg-gradient-to-br from-blue-400 to-purple-500 tracking-widest uppercase">
+                        <h1 ref={textRef} className="text-5xl sm:text-6xl md:text-9xl font-black text-transparent bg-clip-text bg-gradient-to-br from-blue-400 to-purple-500 tracking-widest uppercase">
                             ils
                         </h1>
-                        <div className="absolute bottom-16 text-gray-500 font-mono text-2xl md:text-4xl text-transparent bg-clip-text bg-gradient-to-r from-gray-400 to-gray-600">
+                        <div className="absolute bottom-12 sm:bottom-16 text-gray-500 font-mono text-2xl md:text-4xl text-transparent bg-clip-text bg-gradient-to-r from-gray-400 to-gray-600">
                             <span ref={countRef}>0</span>
                         </div>
                     </motion.div>
@@ -96,30 +96,30 @@ export default function ModeSelection() {
             </AnimatePresence>
 
             {!showIntro && (
-                <div className="min-h-screen bg-[#050510] flex flex-col items-center justify-center p-6 bg-grid-white/[0.02]">
+                <div className="min-h-screen bg-[#050510] flex flex-col items-center justify-center px-4 py-8 sm:p-6 bg-grid-white/[0.02]">
                     <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                        <div className="w-[600px] h-[600px] bg-blue-500/10 rounded-full blur-[100px]" />
+                        <div className="w-[320px] h-[320px] sm:w-[600px] sm:h-[600px] bg-blue-500/10 rounded-full blur-[100px]" />
                     </div>
 
                     <motion.div
                         initial={{ opacity: 0, y: -20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.6 }}
-                        className="text-center mb-16 relative z-10"
+                        className="text-center mb-10 sm:mb-16 relative z-10"
                     >
                         <div className="inline-block mb-4 px-3 py-1 rounded-full border border-white/10 bg-white/5 backdrop-blur-sm text-sm font-mono text-blue-400">
                             INTERACTIVE LEARNING PLATFORM
                         </div>
-                        <h1 className="text-4xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white via-blue-100 to-gray-400 tracking-tight mb-4">
+                        <h1 className="text-3xl sm:text-4xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white via-blue-100 to-gray-400 tracking-tight mb-4">
                             Choose Learning Mode
                         </h1>
-                        <p className="text-gray-400 text-lg max-w-2xl mx-auto">
+                        <p className="text-gray-400 text-base sm:text-lg max-w-2xl mx-auto">
                             Select a dedicated environment to focus on specific algorithm concepts or explore the full integrated simulation system.
                         </p>
                     </motion.div>
 
                     <motion.div
-                        className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl w-full relative z-10 px-4"
+                        className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 max-w-6xl w-full relative z-10"
                         initial={{ opacity: 0, y: 40 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.6, delay: 0.2 }}
@@ -134,11 +134,11 @@ export default function ModeSelection() {
                                 transition={{ duration: 0.3, delay: idx * 0.1 + 0.3 }}
                             >
                                 <Link href={mode.href} className="block h-full">
-                                    <div className={`h-full relative overflow-hidden rounded-2xl border ${mode.border} bg-[#0a0f1c] p-8 flex flex-col backdrop-blur-xl transition-all duration-300 hover:shadow-[0_0_30px_rgba(59,130,246,0.15)] group`}>
+                                    <div className={`h-full relative overflow-hidden rounded-2xl border ${mode.border} bg-[#0a0f1c] p-6 sm:p-8 flex flex-col backdrop-blur-xl transition-all duration-300 hover:shadow-[0_0_30px_rgba(59,130,246,0.15)] group`}>
                                         <div className={`absolute inset-0 bg-gradient-to-br ${mode.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
 
                                         <div className="relative z-10 flex flex-col h-full">
-                                            <div className="text-4xl mb-4 p-4 rounded-xl bg-white/5 w-fit border border-white/10 group-hover:scale-110 transition-transform duration-300">
+                                            <div className="text-3xl sm:text-4xl mb-4 p-3 sm:p-4 rounded-xl bg-white/5 w-fit border border-white/10 group-hover:scale-110 transition-transform duration-300">
                                                 {mode.icon}
                                             </div>
 
@@ -148,7 +148,7 @@ export default function ModeSelection() {
                                                         Main Showcase
                                                     </div>
                                                 )}
-                                                <h2 className="text-2xl font-bold text-white mb-1 group-hover:text-blue-300 transition-colors">
+                                                <h2 className="text-xl sm:text-2xl font-bold text-white mb-1 group-hover:text-blue-300 transition-colors">
                                                     {mode.title}
                                                 </h2>
                                                 <h3 className="text-sm font-mono text-gray-400 mb-4">

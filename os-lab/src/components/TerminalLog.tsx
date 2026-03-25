@@ -39,8 +39,8 @@ export function TerminalLog({ logs }: TerminalLogProps) {
     }, [logs]);
 
     return (
-        <div className="glass-card p-5">
-            <div className="flex items-center justify-between mb-3">
+        <div className="glass-card p-4 sm:p-5">
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between mb-3">
                 <h2 className="font-mono font-semibold text-sm text-[var(--text-primary)] tracking-wide flex items-center gap-2">
                     <Terminal size={14} className="text-[var(--accent-green)]" />
                     SYSTEM LOG
@@ -50,7 +50,7 @@ export function TerminalLog({ logs }: TerminalLogProps) {
                 </span>
             </div>
 
-            <div className="terminal p-3 h-[240px] overflow-y-auto terminal-scroll">
+            <div className="terminal p-3 h-[200px] sm:h-[240px] overflow-y-auto terminal-scroll text-[11px] leading-5">
                 {logs.length === 0 && (
                     <p className="text-[var(--text-muted)] text-xs font-mono">
                         ▋ Awaiting simulation input...

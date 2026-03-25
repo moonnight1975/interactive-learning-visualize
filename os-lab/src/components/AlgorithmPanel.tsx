@@ -84,10 +84,10 @@ export function AlgorithmPanel({
     };
 
     return (
-        <div className={`flex flex-col gap-3 rounded-xl border ${c.border} ${c.bg} p-4`}>
+        <div className={`flex flex-col gap-3 rounded-xl border ${c.border} ${c.bg} p-3 sm:p-4`}>
             {/* Header */}
-            <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex flex-wrap items-center gap-2">
                     <span className={`w-2.5 h-2.5 rounded-full ${c.dot}`} />
                     <span className={`font-display font-bold text-base tracking-widest ${c.text}`}>
                         {label}
@@ -103,65 +103,69 @@ export function AlgorithmPanel({
 
             {/* SVG Seek path */}
             <div className="bg-[rgba(5,8,16,0.7)] rounded-lg border border-[rgba(56,139,253,0.08)] overflow-hidden">
-                <div className="px-3 py-1.5 border-b border-[rgba(56,139,253,0.06)] flex justify-between">
+                <div className="px-3 py-1.5 border-b border-[rgba(56,139,253,0.06)] flex flex-col gap-1 sm:flex-row sm:justify-between">
                     <span className="text-[9px] font-mono text-[var(--text-muted)]">SEEK PATH</span>
                     <span className={`text-[9px] font-mono ${c.text}`}>Seek: {totalSeekTime}</span>
                 </div>
-                <svg viewBox="0 0 500 90" className="w-full" style={{ height: 100 }}>
-                    {/* Grid lines */}
-                    {[0, 50, 100, 150, 199].map((t) => {
-                        const x = (t / 199) * 460 + 20;
-                        return (
-                            <g key={t}>
-                                <line x1={x} y1={8} x2={x} y2={78} stroke="rgba(56,139,253,0.06)" strokeWidth="1" strokeDasharray="3,3" />
-                                <text x={x} y={88} textAnchor="middle" fill="rgba(125,133,144,0.5)" fontSize="7" fontFamily="'JetBrains Mono', monospace">{t}</text>
-                            </g>
-                        );
-                    })}
-                    {/* Path lines */}
-                    {seekPath.length > 1 && seekPath.slice(1).map((track, i) => {
-                        const x1 = (seekPath[i] / 199) * 460 + 20;
-                        const y1 = 8 + (i / Math.max(seekPath.length - 1, 1)) * 70;
-                        const x2 = (track / 199) * 460 + 20;
-                        const y2 = 8 + ((i + 1) / Math.max(seekPath.length - 1, 1)) * 70;
-                        const isLast = i === seekPath.length - 2;
-                        return (
-                            <motion.line
-                                key={i}
-                                x1={x1} y1={y1} x2={x2} y2={y2}
-                                stroke={isLast ? c.pathStrokeLast : c.pathStroke}
-                                strokeWidth={isLast ? 2 : 1.5}
-                                initial={{ pathLength: 0, opacity: 0 }}
-                                animate={{ pathLength: 1, opacity: 1 }}
-                                transition={{ duration: 0.25 }}
-                            />
-                        );
-                    })}
-                    {/* Points */}
-                    {seekPath.map((track, i) => {
-                        const x = (track / 199) * 460 + 20;
-                        const y = 8 + (i / Math.max(seekPath.length - 1, 1)) * 70;
-                        const isLast = i === seekPath.length - 1;
-                        return (
-                            <motion.circle
-                                key={i}
-                                cx={x} cy={y}
-                                r={isLast ? 5 : i === 0 ? 4 : 3}
-                                fill={isLast ? c.headFill : i === 0 ? "rgba(188,140,255,0.9)" : c.pointFill}
-                                stroke={isLast ? c.headFill : "transparent"}
-                                strokeOpacity={0.3}
-                                strokeWidth={isLast ? 3 : 0}
-                                initial={{ scale: 0 }}
-                                animate={{ scale: 1 }}
-                                transition={{ delay: i * 0.04 }}
-                            />
-                        );
-                    })}
-                </svg>
+                <div className="overflow-x-auto">
+                    <div className="min-w-[28rem]">
+                        <svg viewBox="0 0 500 90" className="w-full" style={{ height: 100 }}>
+                            {/* Grid lines */}
+                            {[0, 50, 100, 150, 199].map((t) => {
+                                const x = (t / 199) * 460 + 20;
+                                return (
+                                    <g key={t}>
+                                        <line x1={x} y1={8} x2={x} y2={78} stroke="rgba(56,139,253,0.06)" strokeWidth="1" strokeDasharray="3,3" />
+                                        <text x={x} y={88} textAnchor="middle" fill="rgba(125,133,144,0.5)" fontSize="7" fontFamily="'JetBrains Mono', monospace">{t}</text>
+                                    </g>
+                                );
+                            })}
+                            {/* Path lines */}
+                            {seekPath.length > 1 && seekPath.slice(1).map((track, i) => {
+                                const x1 = (seekPath[i] / 199) * 460 + 20;
+                                const y1 = 8 + (i / Math.max(seekPath.length - 1, 1)) * 70;
+                                const x2 = (track / 199) * 460 + 20;
+                                const y2 = 8 + ((i + 1) / Math.max(seekPath.length - 1, 1)) * 70;
+                                const isLast = i === seekPath.length - 2;
+                                return (
+                                    <motion.line
+                                        key={i}
+                                        x1={x1} y1={y1} x2={x2} y2={y2}
+                                        stroke={isLast ? c.pathStrokeLast : c.pathStroke}
+                                        strokeWidth={isLast ? 2 : 1.5}
+                                        initial={{ pathLength: 0, opacity: 0 }}
+                                        animate={{ pathLength: 1, opacity: 1 }}
+                                        transition={{ duration: 0.25 }}
+                                    />
+                                );
+                            })}
+                            {/* Points */}
+                            {seekPath.map((track, i) => {
+                                const x = (track / 199) * 460 + 20;
+                                const y = 8 + (i / Math.max(seekPath.length - 1, 1)) * 70;
+                                const isLast = i === seekPath.length - 1;
+                                return (
+                                    <motion.circle
+                                        key={i}
+                                        cx={x} cy={y}
+                                        r={isLast ? 5 : i === 0 ? 4 : 3}
+                                        fill={isLast ? c.headFill : i === 0 ? "rgba(188,140,255,0.9)" : c.pointFill}
+                                        stroke={isLast ? c.headFill : "transparent"}
+                                        strokeOpacity={0.3}
+                                        strokeWidth={isLast ? 3 : 0}
+                                        initial={{ scale: 0 }}
+                                        animate={{ scale: 1 }}
+                                        transition={{ delay: i * 0.04 }}
+                                    />
+                                );
+                            })}
+                        </svg>
+                    </div>
+                </div>
             </div>
 
             {/* Track grid */}
-            <div className="grid grid-cols-10 gap-1">
+            <div className="grid grid-cols-5 sm:grid-cols-10 gap-1 justify-items-center">
                 {Array.from({ length: TOTAL_CELLS }, (_, i) => {
                     const status = getCellStatus(i);
                     const cls =
@@ -188,7 +192,7 @@ export function AlgorithmPanel({
                         initial={{ opacity: 0, y: 4 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0 }}
-                        className="grid grid-cols-3 gap-2 text-center"
+                        className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-center"
                     >
                         <div className={`rounded-lg p-2 border ${c.border} ${c.bg}`}>
                             <p className="text-[8px] font-mono text-[var(--text-muted)] mb-0.5">FROM</p>
@@ -213,7 +217,7 @@ export function AlgorithmPanel({
             </AnimatePresence>
 
             {/* Queue (compact) */}
-            <div className="space-y-1 max-h-[180px] overflow-y-auto terminal-scroll">
+            <div className="space-y-1 max-h-[160px] sm:max-h-[180px] overflow-y-auto terminal-scroll">
                 {steps.map((step, idx) => {
                     const status =
                         idx < currentStepIndex ? "done" :
@@ -224,7 +228,7 @@ export function AlgorithmPanel({
                             initial={{ opacity: 0, x: -6 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: idx * 0.02 }}
-                            className={`flex items-center gap-2 px-2.5 py-1.5 rounded-lg border text-[11px] font-mono transition-all ${status === "processing" ? `${c.queueProcessing} border-current` :
+                            className={`flex flex-wrap items-center gap-2 px-2.5 py-1.5 rounded-lg border text-[10px] sm:text-[11px] font-mono transition-all ${status === "processing" ? `${c.queueProcessing} border-current` :
                                     status === "done" ? `${c.queueDone} opacity-70` :
                                         "bg-transparent border-[rgba(56,139,253,0.08)] opacity-50"
                                 }`}

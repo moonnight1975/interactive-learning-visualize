@@ -17,7 +17,7 @@ interface StringMatchPanelProps {
 export function StringMatchPanel({ step, searchConfig }: StringMatchPanelProps) {
     if (!step) {
         return (
-            <div className="glass-card p-5 flex flex-col items-center justify-center min-h-[240px]">
+            <div className="glass-card p-4 sm:p-5 flex flex-col items-center justify-center min-h-[220px] sm:min-h-[240px]">
                 <Search size={32} className="text-[var(--text-muted)] mb-3" />
                 <p className="text-sm font-mono text-[var(--text-muted)] text-center">
                     File-backed string matching results will appear here
@@ -36,8 +36,8 @@ export function StringMatchPanel({ step, searchConfig }: StringMatchPanelProps) 
     const hasPatterns = searchConfig.terms.length > 0;
 
     return (
-        <div className="glass-card p-5">
-            <div className="flex items-center justify-between mb-4">
+        <div className="glass-card p-4 sm:p-5">
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between mb-4">
                 <h2 className="font-mono font-semibold text-sm text-[var(--text-primary)] tracking-wide flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-[var(--accent-purple)]" />
                     STRING MATCHING ENGINE
@@ -57,7 +57,7 @@ export function StringMatchPanel({ step, searchConfig }: StringMatchPanelProps) 
                 </div>
             </div>
 
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
+            <div className="grid grid-cols-2 xl:grid-cols-4 gap-3 mb-4">
                 <div className="bg-[rgba(188,140,255,0.06)] border border-[rgba(188,140,255,0.15)] rounded-lg p-3">
                     <p className="text-[9px] font-mono text-[var(--text-muted)] uppercase mb-1">Patterns</p>
                     <p className="font-mono font-bold text-[var(--accent-purple)] text-sm">
@@ -113,7 +113,7 @@ export function StringMatchPanel({ step, searchConfig }: StringMatchPanelProps) 
                 <p className="text-[10px] font-mono text-[var(--text-muted)] uppercase tracking-wide mb-2">
                     Block Data Content
                 </p>
-                <div className="terminal p-3 leading-6 text-xs rounded-lg text-[var(--text-secondary)] break-words">
+                <div className="terminal p-3 leading-5 sm:leading-6 text-[11px] sm:text-xs rounded-lg text-[var(--text-secondary)] break-words">
                     {segments.map((segment, index) =>
                         segment.highlight ? (
                             <motion.span
@@ -151,7 +151,7 @@ export function StringMatchPanel({ step, searchConfig }: StringMatchPanelProps) 
                                 key={entry.pattern}
                                 className="rounded-lg border border-[rgba(56,139,253,0.1)] bg-[rgba(8,13,26,0.7)] p-3"
                             >
-                                <div className="flex items-center justify-between mb-1">
+                                <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between mb-1">
                                     <span className="text-[10px] font-mono text-[var(--text-primary)]">
                                         {entry.pattern}
                                     </span>
@@ -159,7 +159,7 @@ export function StringMatchPanel({ step, searchConfig }: StringMatchPanelProps) 
                                         {entry.count} hit{entry.count === 1 ? "" : "s"}
                                     </span>
                                 </div>
-                                <div className="flex items-center justify-between text-[9px] font-mono text-[var(--text-muted)]">
+                                <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between text-[9px] font-mono text-[var(--text-muted)]">
                                     <span>{entry.comparisons} comparisons</span>
                                     <span>
                                         {entry.matches.length > 0
@@ -175,7 +175,7 @@ export function StringMatchPanel({ step, searchConfig }: StringMatchPanelProps) 
 
             {hasPatterns && searchConfig.terms[0] && (
                 <>
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <div className="bg-[rgba(8,13,26,0.7)] border border-[rgba(56,139,253,0.1)] rounded-lg p-3">
                             <div className="flex items-center gap-1.5 mb-2">
                                 <Activity size={12} className="text-[var(--accent-blue)]" />
@@ -236,7 +236,7 @@ export function StringMatchPanel({ step, searchConfig }: StringMatchPanelProps) 
                     </div>
 
                     <div className="mt-3 p-2.5 rounded-lg bg-[rgba(56,139,253,0.04)] border border-[rgba(56,139,253,0.08)]">
-                        <div className="flex justify-between items-center mb-1">
+                        <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between mb-1">
                             <span className="text-[9px] font-mono text-[var(--text-muted)]">
                                 Primary term benchmark: {searchConfig.terms[0]}
                             </span>

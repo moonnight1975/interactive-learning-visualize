@@ -277,7 +277,7 @@ export default function AOAMode() {
 
                                     {comparison.winner !== "tie" && (
                                         <div className="glass-card p-4 text-center bg-gradient-to-r from-blue-900/20 to-purple-900/20 border-t-2 border-t-green-500">
-                                            <h3 className="text-lg font-bold text-green-400">
+                                            <h3 className="text-base sm:text-lg font-bold text-green-400">
                                                 {comparison.winner.toUpperCase()} is {comparison.speedupFactor.toFixed(2)}x more efficient!
                                             </h3>
                                         </div>
@@ -312,18 +312,18 @@ export default function AOAMode() {
                                         <h3 className="font-mono font-bold text-blue-400 mb-4 tracking-wider uppercase">
                                             {algorithm} ALGORITHM RESULTS
                                         </h3>
-                                        <div className="grid grid-cols-3 gap-4 mb-6">
+                                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
                                             <div className="bg-[#0a0f1c] p-4 rounded-xl border border-white/5 flex flex-col items-center justify-center">
                                                 <div className="text-[10px] text-gray-400 mb-1 font-mono tracking-widest">COMPARISONS</div>
-                                                <div className="text-3xl font-mono text-white">{result.comparisons}</div>
+                                                <div className="text-2xl sm:text-3xl font-mono text-white">{result.comparisons}</div>
                                             </div>
                                             <div className="bg-[#0a0f1c] p-4 rounded-xl border border-white/5 flex flex-col items-center justify-center">
                                                 <div className="text-[10px] text-gray-400 mb-1 font-mono tracking-widest">MATCHES</div>
-                                                <div className="text-3xl font-mono text-white">{result.matches.length}</div>
+                                                <div className="text-2xl sm:text-3xl font-mono text-white">{result.matches.length}</div>
                                             </div>
                                             <div className="bg-[#0a0f1c] p-4 rounded-xl border border-white/5 flex flex-col items-center justify-center">
                                                 <div className="text-[10px] text-gray-400 mb-1 font-mono tracking-widest">EXEC TIME ms</div>
-                                                <div className="text-3xl font-mono text-white">{result.executionTimeMs.toFixed(2)}</div>
+                                                <div className="text-2xl sm:text-3xl font-mono text-white">{result.executionTimeMs.toFixed(2)}</div>
                                             </div>
                                         </div>
                                     </div>
@@ -342,7 +342,7 @@ export default function AOAMode() {
                                     />
                                 </motion.div>
                             ) : (
-                                <div className="h-full min-h-[400px] flex items-center justify-center border-2 border-dashed border-white/10 rounded-2xl glass-card">
+                                <div className="h-full min-h-[280px] sm:min-h-[400px] flex items-center justify-center border-2 border-dashed border-white/10 rounded-2xl glass-card">
                                     <div className="text-center">
                                         <div className="text-4xl mb-4">🔍</div>
                                         <h3 className="text-lg font-mono text-gray-400">WAITING FOR INPUT</h3>

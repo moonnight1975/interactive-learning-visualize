@@ -53,13 +53,13 @@ export function DiskVisualization({
     };
 
     return (
-        <div className="glass-card p-5">
-            <div className="flex items-center justify-between mb-4">
+        <div className="glass-card p-4 sm:p-5">
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between mb-4">
                 <h2 className="font-mono font-semibold text-sm text-[var(--text-primary)] tracking-wide flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-[var(--accent-blue)]" />
                     DISK ARM VISUALIZATION
                 </h2>
-                <div className="flex items-center gap-3 text-[10px] font-mono">
+                <div className="flex flex-wrap items-center gap-3 text-[10px] font-mono">
                     <span className="flex items-center gap-1.5">
                         <span className="w-2.5 h-2.5 rounded-sm bg-orange-500/40 border border-orange-500/60" />
                         <span className="text-[var(--text-muted)]">Head</span>
@@ -77,102 +77,106 @@ export function DiskVisualization({
 
             {/* SVG Seek Graph */}
             <div className="relative mb-5 bg-[rgba(5,8,16,0.6)] rounded-lg border border-[rgba(56,139,253,0.1)] overflow-hidden">
-                <div className="px-4 py-2 border-b border-[rgba(56,139,253,0.08)] flex items-center justify-between">
+                <div className="px-4 py-2 border-b border-[rgba(56,139,253,0.08)] flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
                     <span className="text-[10px] font-mono text-[var(--text-muted)]">SEEK PATH GRAPH</span>
                     <span className="text-[10px] font-mono text-[var(--accent-blue)]">
                         Head: Track {headPos}
                     </span>
                 </div>
-                <svg
-                    ref={svgRef}
-                    viewBox="0 0 600 120"
-                    className="w-full"
-                    style={{ height: 130 }}
-                >
-                    {/* Grid lines */}
-                    {[0, 50, 100, 150, 199].map((track) => {
-                        const x = (track / 199) * 560 + 20;
-                        return (
-                            <g key={track}>
-                                <line
-                                    x1={x} y1={10} x2={x} y2={100}
-                                    stroke="rgba(56,139,253,0.08)"
-                                    strokeWidth="1"
-                                    strokeDasharray="4,4"
-                                />
-                                <text
-                                    x={x} y={112}
-                                    textAnchor="middle"
-                                    fill="rgba(125,133,144,0.7)"
-                                    fontSize="8"
-                                    fontFamily="'JetBrains Mono', monospace"
-                                >
-                                    {track}
-                                </text>
-                            </g>
-                        );
-                    })}
+                <div className="overflow-x-auto">
+                    <div className="min-w-[32rem]">
+                        <svg
+                            ref={svgRef}
+                            viewBox="0 0 600 120"
+                            className="w-full"
+                            style={{ height: 130 }}
+                        >
+                            {/* Grid lines */}
+                            {[0, 50, 100, 150, 199].map((track) => {
+                                const x = (track / 199) * 560 + 20;
+                                return (
+                                    <g key={track}>
+                                        <line
+                                            x1={x} y1={10} x2={x} y2={100}
+                                            stroke="rgba(56,139,253,0.08)"
+                                            strokeWidth="1"
+                                            strokeDasharray="4,4"
+                                        />
+                                        <text
+                                            x={x} y={112}
+                                            textAnchor="middle"
+                                            fill="rgba(125,133,144,0.7)"
+                                            fontSize="8"
+                                            fontFamily="'JetBrains Mono', monospace"
+                                        >
+                                            {track}
+                                        </text>
+                                    </g>
+                                );
+                            })}
 
-                    {/* Y-axis step labels */}
-                    {seekPath.map((_, i) => {
-                        const y = 10 + (i / Math.max(seekPath.length - 1, 1)) * 90;
-                        return (
-                            <text
-                                key={i} x={8} y={y + 4}
-                                textAnchor="middle"
-                                fill="rgba(125,133,144,0.5)"
-                                fontSize="7"
-                                fontFamily="'JetBrains Mono', monospace"
-                            >
-                                {i}
-                            </text>
-                        );
-                    })}
+                            {/* Y-axis step labels */}
+                            {seekPath.map((_, i) => {
+                                const y = 10 + (i / Math.max(seekPath.length - 1, 1)) * 90;
+                                return (
+                                    <text
+                                        key={i} x={8} y={y + 4}
+                                        textAnchor="middle"
+                                        fill="rgba(125,133,144,0.5)"
+                                        fontSize="7"
+                                        fontFamily="'JetBrains Mono', monospace"
+                                    >
+                                        {i}
+                                    </text>
+                                );
+                            })}
 
-                    {/* Path lines */}
-                    {seekPath.length > 1 && seekPath.slice(1).map((track, i) => {
-                        const prevTrackVal = seekPath[i];
-                        const x1 = (prevTrackVal / 199) * 560 + 20;
-                        const y1 = 10 + (i / Math.max(seekPath.length - 1, 1)) * 90;
-                        const x2 = (track / 199) * 560 + 20;
-                        const y2 = 10 + ((i + 1) / Math.max(seekPath.length - 1, 1)) * 90;
-                        return (
-                            <motion.line
-                                key={i}
-                                x1={x1} y1={y1} x2={x2} y2={y2}
-                                stroke={i === seekPath.length - 2 ? "rgba(247,144,0,0.8)" : "rgba(56,139,253,0.5)"}
-                                strokeWidth="1.5"
-                                initial={{ pathLength: 0, opacity: 0 }}
-                                animate={{ pathLength: 1, opacity: 1 }}
-                                transition={{ duration: 0.3 }}
-                            />
-                        );
-                    })}
+                            {/* Path lines */}
+                            {seekPath.length > 1 && seekPath.slice(1).map((track, i) => {
+                                const prevTrackVal = seekPath[i];
+                                const x1 = (prevTrackVal / 199) * 560 + 20;
+                                const y1 = 10 + (i / Math.max(seekPath.length - 1, 1)) * 90;
+                                const x2 = (track / 199) * 560 + 20;
+                                const y2 = 10 + ((i + 1) / Math.max(seekPath.length - 1, 1)) * 90;
+                                return (
+                                    <motion.line
+                                        key={i}
+                                        x1={x1} y1={y1} x2={x2} y2={y2}
+                                        stroke={i === seekPath.length - 2 ? "rgba(247,144,0,0.8)" : "rgba(56,139,253,0.5)"}
+                                        strokeWidth="1.5"
+                                        initial={{ pathLength: 0, opacity: 0 }}
+                                        animate={{ pathLength: 1, opacity: 1 }}
+                                        transition={{ duration: 0.3 }}
+                                    />
+                                );
+                            })}
 
-                    {/* Points */}
-                    {seekPath.map((track, i) => {
-                        const x = (track / 199) * 560 + 20;
-                        const y = 10 + (i / Math.max(seekPath.length - 1, 1)) * 90;
-                        const isLast = i === seekPath.length - 1;
-                        return (
-                            <motion.circle
-                                key={i}
-                                cx={x} cy={y} r={isLast ? 5 : 3}
-                                fill={isLast ? "rgba(247,144,0,1)" : i === 0 ? "rgba(188,140,255,0.9)" : "rgba(56,139,253,0.8)"}
-                                stroke={isLast ? "rgba(247,144,0,0.4)" : "transparent"}
-                                strokeWidth={isLast ? 3 : 0}
-                                initial={{ scale: 0 }}
-                                animate={{ scale: 1 }}
-                                transition={{ delay: i * 0.05 }}
-                            />
-                        );
-                    })}
-                </svg>
+                            {/* Points */}
+                            {seekPath.map((track, i) => {
+                                const x = (track / 199) * 560 + 20;
+                                const y = 10 + (i / Math.max(seekPath.length - 1, 1)) * 90;
+                                const isLast = i === seekPath.length - 1;
+                                return (
+                                    <motion.circle
+                                        key={i}
+                                        cx={x} cy={y} r={isLast ? 5 : 3}
+                                        fill={isLast ? "rgba(247,144,0,1)" : i === 0 ? "rgba(188,140,255,0.9)" : "rgba(56,139,253,0.8)"}
+                                        stroke={isLast ? "rgba(247,144,0,0.4)" : "transparent"}
+                                        strokeWidth={isLast ? 3 : 0}
+                                        initial={{ scale: 0 }}
+                                        animate={{ scale: 1 }}
+                                        transition={{ delay: i * 0.05 }}
+                                    />
+                                );
+                            })}
+                        </svg>
+                    </div>
+                </div>
             </div>
 
             {/* Cell grid */}
             <div>
-                <div className="flex items-center justify-between mb-2">
+                <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between mb-2">
                     <span className="text-[10px] font-mono text-[var(--text-muted)] uppercase tracking-wide">
                         Disk Sectors (200 tracks, grouped by 10)
                     </span>
@@ -180,7 +184,7 @@ export function DiskVisualization({
                         ◆ Track {headPos}
                     </span>
                 </div>
-                <div className="grid grid-cols-10 gap-1">
+                <div className="grid grid-cols-5 sm:grid-cols-10 gap-1 justify-items-center">
                     {Array.from({ length: TOTAL_CELLS }, (_, i) => {
                         const status = getCellStatus(i);
                         const trackStart = i * TRACKS_PER_CELL;
@@ -213,7 +217,7 @@ export function DiskVisualization({
                         exit={{ opacity: 0, y: -5 }}
                         className="mt-4 p-3 rounded-lg bg-[rgba(56,139,253,0.05)] border border-[rgba(56,139,253,0.15)]"
                     >
-                        <div className="grid grid-cols-3 gap-3 text-center">
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-center">
                             <div>
                                 <p className="text-[9px] font-mono text-[var(--text-muted)] uppercase mb-0.5">From</p>
                                 <p className="font-mono font-bold text-[var(--accent-purple)]">

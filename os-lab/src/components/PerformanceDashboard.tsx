@@ -36,7 +36,7 @@ function MetricCard({
             className="metric-card"
         >
             <div
-                className="w-8 h-8 rounded-lg flex items-center justify-center mb-3"
+                className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center mb-3"
                 style={{ background: `${color}15`, border: `1px solid ${color}30` }}
             >
                 <span style={{ color }}>
@@ -46,7 +46,7 @@ function MetricCard({
             <p className="text-[10px] font-mono text-[var(--text-muted)] uppercase tracking-wider mb-1">{label}</p>
             <div className="flex items-baseline gap-1">
                 <motion.span
-                    className="text-xl font-bold font-mono"
+                    className="text-lg sm:text-xl font-bold font-mono"
                     style={{ color }}
                     key={String(value)}
                     initial={{ scale: 0.8, opacity: 0 }}
@@ -55,7 +55,7 @@ function MetricCard({
                 >
                     {value}
                 </motion.span>
-                {unit && <span className="text-xs font-mono text-[var(--text-muted)]">{unit}</span>}
+                {unit && <span className="text-[10px] sm:text-xs font-mono text-[var(--text-muted)]">{unit}</span>}
             </div>
         </motion.div>
     );
@@ -75,8 +75,8 @@ export function PerformanceDashboard({
     const progress = totalBlocks > 0 ? (completedBlocks / totalBlocks) * 100 : 0;
 
     return (
-        <div className="glass-card p-5">
-            <div className="flex items-center justify-between mb-4">
+        <div className="glass-card p-4 sm:p-5">
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between mb-4">
                 <h2 className="font-mono font-semibold text-sm text-[var(--text-primary)] tracking-wide flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-[var(--accent-green)]" />
                     PERFORMANCE DASHBOARD
@@ -91,7 +91,7 @@ export function PerformanceDashboard({
 
             {/* Progress bar */}
             <div className="mb-5">
-                <div className="flex justify-between text-[10px] font-mono text-[var(--text-muted)] mb-1.5">
+                <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between text-[10px] font-mono text-[var(--text-muted)] mb-1.5">
                     <span>Progress: {completedBlocks}/{totalBlocks} blocks</span>
                     <span>{progress.toFixed(0)}%</span>
                 </div>

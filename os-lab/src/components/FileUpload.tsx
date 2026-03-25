@@ -87,14 +87,14 @@ export function FileUpload({
     );
 
     return (
-        <div className="glass-card p-5">
-            <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-2">
+        <div className="glass-card p-4 sm:p-5">
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between mb-4">
+                <div className="flex flex-wrap items-center gap-2">
                     <UploadCloud size={15} className="text-[var(--accent-blue)]" />
                     <h2 className="font-mono font-semibold text-sm text-[var(--text-primary)] tracking-wide">
                         FILE UPLOAD
                     </h2>
-                    <span className="ml-1 text-[9px] font-mono px-2 py-0.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400">
+                    <span className="text-[9px] font-mono px-2 py-0.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400">
                         REAL DATA MODE
                     </span>
                 </div>
@@ -134,7 +134,7 @@ export function FileUpload({
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-2 gap-2">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                             {[
                                 { label: "Total Lines", value: parsedFile.totalLines.toLocaleString() },
                                 { label: "Total Words", value: parsedFile.totalWords.toLocaleString() },
@@ -185,7 +185,7 @@ export function FileUpload({
 
                         {showSearchSuggestions && parsedFile.recommendedPatterns.length > 0 && (
                             <div className="rounded-lg p-3 bg-[rgba(56,139,253,0.04)] border border-[rgba(56,139,253,0.12)]">
-                                <div className="flex items-center justify-between gap-3 mb-2">
+                                <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between mb-2">
                                     <div className="flex items-center gap-1.5">
                                         <Radar size={10} className="text-[var(--accent-blue)]" />
                                         <p className="text-[9px] font-mono text-[var(--text-muted)] uppercase">
@@ -250,7 +250,7 @@ export function FileUpload({
                                 Blocks are mapped into a stable extent from Track {parsedFile.ioProfile.trackStart} to{" "}
                                 Track {parsedFile.ioProfile.trackEnd}. Avg block size: {parsedFile.ioProfile.avgBlockChars} chars.
                             </p>
-                            <div className="flex flex-wrap gap-1 mt-2">
+                            <div className="flex flex-wrap gap-1 mt-2 max-h-[160px] overflow-y-auto terminal-scroll pr-1">
                                 {parsedFile.blocks.map((block) => (
                                     <span
                                         key={block.blockIndex}
@@ -314,7 +314,7 @@ export function FileUpload({
                                             className={isDragging ? "text-[var(--accent-blue)]" : "text-[var(--text-muted)]"}
                                         />
                                     </motion.div>
-                                    <div>
+                                    <div className="max-w-sm">
                                         <p className="font-mono text-xs font-semibold text-[var(--text-primary)]">
                                             {isDragging ? "Drop to upload" : "Drop a file or click to browse"}
                                         </p>

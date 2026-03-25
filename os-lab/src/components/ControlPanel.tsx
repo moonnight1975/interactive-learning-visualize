@@ -133,15 +133,15 @@ export function ControlPanel({
     };
 
     return (
-        <div className="glass-card p-5">
-            <div className="flex items-center justify-between mb-4">
+        <div className="glass-card p-4 sm:p-5">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-4">
                 <div className="flex items-center gap-2">
                     <Settings2 size={16} className="text-[var(--accent-blue)]" />
                     <h2 className="font-mono font-semibold text-sm text-[var(--text-primary)] tracking-wide">
                         SIMULATION PARAMETERS
                     </h2>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex flex-wrap gap-2">
                     {["classic", "simple", "heavy"].map((preset) => (
                         <button
                             key={preset}
@@ -158,7 +158,7 @@ export function ControlPanel({
             <button
                 onClick={onToggleComparison}
                 disabled={isRunning && !isPaused}
-                className={`w-full flex items-center justify-between px-4 py-3 rounded-xl border transition-all mb-4 ${
+                className={`w-full flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between px-4 py-3 rounded-xl border transition-all mb-4 ${
                     comparisonMode
                         ? "bg-gradient-to-r from-blue-500/10 to-green-500/10 border-[rgba(63,185,80,0.35)] shadow-[0_0_18px_rgba(63,185,80,0.08)]"
                         : "bg-[rgba(56,139,253,0.04)] border-[rgba(56,139,253,0.15)] hover:border-[rgba(56,139,253,0.3)]"
@@ -198,7 +198,7 @@ export function ControlPanel({
             </button>
 
             {comparisonMode && (
-                <div className="flex gap-3 mb-4">
+                <div className="flex flex-col gap-3 sm:flex-row mb-4">
                     <div className="flex-1 flex items-center gap-2 text-[10px] font-mono px-3 py-1.5 rounded-lg bg-blue-500/10 border border-blue-500/20">
                         <span className="w-2 h-2 rounded-full bg-blue-400" />
                         <span className="text-blue-300 font-bold">FCFS</span>
@@ -212,7 +212,7 @@ export function ControlPanel({
                 </div>
             )}
 
-            <div className={`grid grid-cols-1 ${showPatternControls ? "md:grid-cols-2" : ""} gap-4`}>
+            <div className={`grid grid-cols-1 ${showPatternControls ? "sm:grid-cols-2" : ""} gap-4`}>
                 <div>
                     <label className="block text-xs font-mono text-[var(--text-secondary)] mb-1.5 tracking-wide">
                         INITIAL HEAD POSITION <span className="text-[var(--text-muted)]">(0-199)</span>
@@ -245,7 +245,7 @@ export function ControlPanel({
                             className="os-input"
                             placeholder={fileMode ? "e.g. error, timeout, denied" : "e.g. kernel, buffer"}
                         />
-                        <div className="flex items-center justify-between mt-1.5 gap-3">
+                        <div className="flex flex-col items-start gap-2 sm:flex-row sm:items-center sm:justify-between mt-1.5">
                             <p className="text-[9px] font-mono text-[var(--text-muted)]">
                                 {parsedTerms.length > 0
                                     ? `Scanning ${parsedTerms.length} pattern${parsedTerms.length === 1 ? "" : "s"}`
@@ -267,7 +267,7 @@ export function ControlPanel({
                     </div>
                 )}
 
-                <div className={showPatternControls ? "md:col-span-2" : undefined}>
+                <div className={showPatternControls ? "sm:col-span-2" : undefined}>
                     <label className="block text-xs font-mono text-[var(--text-secondary)] mb-1.5 tracking-wide">
                         TRACK REQUESTS <span className="text-[var(--text-muted)]">(comma-separated, 0-199)</span>
                     </label>
@@ -307,7 +307,7 @@ export function ControlPanel({
                     <label className="block text-xs font-mono text-[var(--text-secondary)] mb-2 tracking-wide">
                         EXECUTION MODE
                     </label>
-                    <div className="flex gap-3">
+                    <div className="flex flex-col gap-3 sm:flex-row">
                         {[
                             { val: true, label: "AUTO-RUN" },
                             { val: false, label: "STEP-BY-STEP" },
@@ -387,7 +387,7 @@ export function ControlPanel({
                 </div>
             )}
 
-            <div className="flex items-center gap-2 mt-4 p-2.5 rounded-lg bg-[rgba(56,139,253,0.04)] border border-[rgba(56,139,253,0.08)]">
+            <div className="flex items-start gap-2 mt-4 p-2.5 rounded-lg bg-[rgba(56,139,253,0.04)] border border-[rgba(56,139,253,0.08)]">
                 <Info size={12} className="text-[var(--accent-blue)] flex-shrink-0" />
                 <p className="text-[10px] font-mono text-[var(--text-muted)]">
                     {!showPatternControls
@@ -402,13 +402,13 @@ export function ControlPanel({
                 </p>
             </div>
 
-            <div className="flex gap-3 mt-5">
+            <div className="flex flex-col gap-3 sm:flex-row mt-5">
                 {!isRunning || isComplete ? (
                     <motion.button
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
                         onClick={handleStart}
-                        className="os-btn os-btn-primary flex-1"
+                        className="os-btn os-btn-primary flex-1 justify-center"
                     >
                         <Play size={14} />
                         {isComplete ? "RE-RUN SIMULATION" : "START SIMULATION"}
@@ -419,7 +419,7 @@ export function ControlPanel({
                             whileHover={{ scale: 1.02 }}
                             whileTap={{ scale: 0.98 }}
                             onClick={onTogglePause}
-                            className="os-btn os-btn-secondary flex-1"
+                            className="os-btn os-btn-secondary flex-1 justify-center"
                         >
                             <Pause size={14} />
                             {isPaused ? "RESUME" : "PAUSE"}
@@ -429,7 +429,7 @@ export function ControlPanel({
                                 whileHover={{ scale: 1.02 }}
                                 whileTap={{ scale: 0.98 }}
                                 onClick={onStep}
-                                className="os-btn os-btn-secondary"
+                                className="os-btn os-btn-secondary justify-center"
                             >
                                 <SkipForward size={14} />
                                 STEP
@@ -441,7 +441,7 @@ export function ControlPanel({
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={onReset}
-                    className="os-btn os-btn-danger"
+                    className="os-btn os-btn-danger justify-center"
                 >
                     <RotateCcw size={14} />
                     RESET

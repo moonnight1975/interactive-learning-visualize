@@ -361,6 +361,7 @@ body {
   border-radius: 10px;
   padding: 16px;
   transition: all 0.3s ease;
+  min-width: 0;
 }
 
 .metric-card:hover {
@@ -374,6 +375,7 @@ body {
   padding: 4px 0;
   border-bottom: 1px solid rgba(56, 139, 253, 0.05);
   animation: fade-up 0.3s ease-out;
+  word-break: break-word;
 }
 
 .log-entry:last-child {
@@ -399,6 +401,7 @@ body {
   transition: all 0.3s ease;
   font-family: 'JetBrains Mono', monospace;
   font-size: 13px;
+  flex-wrap: wrap;
 }
 
 .queue-item.processing {
@@ -482,4 +485,32 @@ body {
 .terminal-scroll::-webkit-scrollbar-thumb {
   background: rgba(56, 139, 253, 0.3);
   border-radius: 2px;
+}
+
+@media (max-width: 640px) {
+  .track-cell {
+    width: 36px;
+    height: 36px;
+    font-size: 10px;
+  }
+
+  .status-badge {
+    gap: 4px;
+    padding: 3px 8px;
+    font-size: 10px;
+  }
+
+  .metric-card {
+    padding: 12px;
+  }
+
+  .queue-item {
+    gap: 6px;
+    padding: 8px 10px;
+    font-size: 12px;
+  }
+
+  .tooltip::after {
+    display: none;
+  }
 }

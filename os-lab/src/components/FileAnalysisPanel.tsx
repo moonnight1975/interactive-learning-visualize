@@ -77,8 +77,8 @@ export function FileAnalysisPanel({
     const dominantPattern = [...patternFreq].sort((a, b) => b.count - a.count)[0];
 
     return (
-        <div className="glass-card p-5 space-y-5">
-            <div className="flex items-center gap-2">
+        <div className="glass-card p-4 sm:p-5 space-y-5">
+            <div className="flex flex-wrap items-center gap-2">
                 <FileText size={14} className="text-[var(--accent-blue)]" />
                 <h2 className="font-mono font-semibold text-sm text-[var(--text-primary)] tracking-wide">
                     FILE ANALYSIS
@@ -116,7 +116,7 @@ export function FileAnalysisPanel({
             </div>
 
             <div>
-                <div className="flex items-center justify-between mb-2">
+                <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between mb-2">
                     <div className="flex items-center gap-1.5">
                         <Layers size={11} className="text-[var(--accent-cyan)]" />
                         <span className="text-[10px] font-mono text-[var(--text-muted)] uppercase tracking-wide">
@@ -137,7 +137,7 @@ export function FileAnalysisPanel({
                             key={currentStep.stepIndex}
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
-                            className="text-[11px] font-mono text-[var(--text-secondary)] leading-5 break-words"
+                            className="text-[10px] sm:text-[11px] font-mono text-[var(--text-secondary)] leading-5 break-words"
                         >
                             {highlightedContent.map((segment, index) =>
                                 segment.highlight ? (
@@ -319,7 +319,7 @@ export function FileAnalysisPanel({
                                 initial={{ opacity: 0, x: -4 }}
                                 animate={{ opacity: 1, x: 0 }}
                                 transition={{ delay: block.blockIndex * 0.03 }}
-                                className={`flex items-center gap-2 px-2.5 py-1.5 rounded-lg border text-[10px] font-mono transition-all ${
+                                className={`flex flex-wrap items-center gap-2 px-2.5 py-1.5 rounded-lg border text-[10px] font-mono transition-all ${
                                     isCurrent
                                         ? "border-orange-400/50 bg-orange-500/10"
                                         : isVisited

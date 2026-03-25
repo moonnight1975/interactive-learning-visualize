@@ -132,7 +132,7 @@ export function ComparisonResults({
                         </div>
                     </div>
 
-                    <div className="flex gap-4">
+                    <div className="flex flex-wrap sm:flex-nowrap gap-3 sm:gap-4">
                         <div className="text-center">
                             <p className="text-[9px] font-mono text-[var(--text-muted)]">FCFS</p>
                             <p className="font-mono font-bold text-[var(--accent-blue)]">{fcfsTotal}</p>
@@ -207,76 +207,78 @@ export function ComparisonResults({
                         PERFORMANCE COMPARISON TABLE
                     </span>
                 </div>
-                <table className="w-full text-xs font-mono">
-                    <thead>
-                        <tr className="border-b border-[rgba(56,139,253,0.08)]">
-                            <th className="text-left px-4 py-2.5 text-[var(--text-muted)] font-normal">Metric</th>
-                            <th className="text-center px-4 py-2.5 text-[var(--accent-blue)] font-bold">FCFS</th>
-                            <th className="text-center px-4 py-2.5 text-[var(--accent-green)] font-bold">SSTF</th>
-                            <th className="text-center px-4 py-2.5 text-[var(--text-muted)] font-normal">Δ</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {[
-                            {
-                                label: "Total Seek Time",
-                                fcfs: `${dual.fcfsTotal} tracks`,
-                                sstf: `${dual.sstfTotal} tracks`,
-                                delta: `${Math.abs(dual.fcfsTotal - dual.sstfTotal)} saved`,
-                                positive: dual.sstfTotal < dual.fcfsTotal,
-                            },
-                            {
-                                label: "Requests Processed",
-                                fcfs: dual.fcfs.steps.length,
-                                sstf: dual.sstf.steps.length,
-                                delta: "—",
-                                positive: null,
-                            },
-                            {
-                                label: "Avg Seek / Block",
-                                fcfs: dual.fcfs.steps.length > 0
-                                    ? (dual.fcfsTotal / dual.fcfs.steps.length).toFixed(1)
-                                    : "—",
-                                sstf: dual.sstf.steps.length > 0
-                                    ? (dual.sstfTotal / dual.sstf.steps.length).toFixed(1)
-                                    : "—",
-                                delta: dual.fcfs.steps.length > 0 && dual.sstf.steps.length > 0
-                                    ? `${Math.abs(
-                                        dual.fcfsTotal / dual.fcfs.steps.length -
-                                        dual.sstfTotal / dual.sstf.steps.length
-                                    ).toFixed(1)} diff`
-                                    : "—",
-                                positive: dual.sstfTotal < dual.fcfsTotal,
-                            },
-                            {
-                                label: "Improvement",
-                                fcfs: "baseline",
-                                sstf: `${improvement >= 0 ? "+" : ""}${improvement.toFixed(1)}%`,
-                                delta: improvement >= 0 ? "✓ Better" : "✗ Worse",
-                                positive: improvement > 0,
-                            },
-                        ].map((row, i) => (
-                            <tr
-                                key={i}
-                                className="border-b border-[rgba(56,139,253,0.05)] hover:bg-[rgba(56,139,253,0.03)] transition-colors"
-                            >
-                                <td className="px-4 py-2.5 text-[var(--text-secondary)]">{row.label}</td>
-                                <td className="px-4 py-2.5 text-center text-[var(--accent-blue)]">{row.fcfs}</td>
-                                <td className="px-4 py-2.5 text-center text-[var(--accent-green)]">{row.sstf}</td>
-                                <td
-                                    className={`px-4 py-2.5 text-center ${row.positive === true
-                                            ? "text-green-400"
-                                            : row.positive === false
-                                                ? "text-red-400"
-                                                : "text-[var(--text-muted)]"
-                                        }`}
-                                >
-                                    {row.delta}
-                                </td>
+                <div className="overflow-x-auto">
+                    <table className="w-full min-w-[38rem] text-xs font-mono">
+                        <thead>
+                            <tr className="border-b border-[rgba(56,139,253,0.08)]">
+                                <th className="text-left px-4 py-2.5 text-[var(--text-muted)] font-normal">Metric</th>
+                                <th className="text-center px-4 py-2.5 text-[var(--accent-blue)] font-bold">FCFS</th>
+                                <th className="text-center px-4 py-2.5 text-[var(--accent-green)] font-bold">SSTF</th>
+                                <th className="text-center px-4 py-2.5 text-[var(--text-muted)] font-normal">Δ</th>
                             </tr>
-                        ))}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            {[
+                                {
+                                    label: "Total Seek Time",
+                                    fcfs: `${dual.fcfsTotal} tracks`,
+                                    sstf: `${dual.sstfTotal} tracks`,
+                                    delta: `${Math.abs(dual.fcfsTotal - dual.sstfTotal)} saved`,
+                                    positive: dual.sstfTotal < dual.fcfsTotal,
+                                },
+                                {
+                                    label: "Requests Processed",
+                                    fcfs: dual.fcfs.steps.length,
+                                    sstf: dual.sstf.steps.length,
+                                    delta: "—",
+                                    positive: null,
+                                },
+                                {
+                                    label: "Avg Seek / Block",
+                                    fcfs: dual.fcfs.steps.length > 0
+                                        ? (dual.fcfsTotal / dual.fcfs.steps.length).toFixed(1)
+                                        : "—",
+                                    sstf: dual.sstf.steps.length > 0
+                                        ? (dual.sstfTotal / dual.sstf.steps.length).toFixed(1)
+                                        : "—",
+                                    delta: dual.fcfs.steps.length > 0 && dual.sstf.steps.length > 0
+                                        ? `${Math.abs(
+                                            dual.fcfsTotal / dual.fcfs.steps.length -
+                                            dual.sstfTotal / dual.sstf.steps.length
+                                        ).toFixed(1)} diff`
+                                        : "—",
+                                    positive: dual.sstfTotal < dual.fcfsTotal,
+                                },
+                                {
+                                    label: "Improvement",
+                                    fcfs: "baseline",
+                                    sstf: `${improvement >= 0 ? "+" : ""}${improvement.toFixed(1)}%`,
+                                    delta: improvement >= 0 ? "✓ Better" : "✗ Worse",
+                                    positive: improvement > 0,
+                                },
+                            ].map((row, i) => (
+                                <tr
+                                    key={i}
+                                    className="border-b border-[rgba(56,139,253,0.05)] hover:bg-[rgba(56,139,253,0.03)] transition-colors"
+                                >
+                                    <td className="px-4 py-2.5 text-[var(--text-secondary)]">{row.label}</td>
+                                    <td className="px-4 py-2.5 text-center text-[var(--accent-blue)]">{row.fcfs}</td>
+                                    <td className="px-4 py-2.5 text-center text-[var(--accent-green)]">{row.sstf}</td>
+                                    <td
+                                        className={`px-4 py-2.5 text-center ${row.positive === true
+                                                ? "text-green-400"
+                                                : row.positive === false
+                                                    ? "text-red-400"
+                                                    : "text-[var(--text-muted)]"
+                                            }`}
+                                    >
+                                        {row.delta}
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
             {/* ── Bar Chart ────────────────────────────────────────────── */}
@@ -284,8 +286,10 @@ export function ComparisonResults({
                 <p className="text-[10px] font-mono text-[var(--text-muted)] uppercase tracking-wide mb-3">
                     Total Seek Time — FCFS vs SSTF
                 </p>
-                <div style={{ height: 180 }}>
-                    <Bar data={chartData} options={chartOptions as Parameters<typeof Bar>[0]["options"]} />
+                <div className="overflow-x-auto">
+                    <div className="min-w-[28rem]" style={{ height: 180 }}>
+                        <Bar data={chartData} options={chartOptions as Parameters<typeof Bar>[0]["options"]} />
+                    </div>
                 </div>
             </div>
 

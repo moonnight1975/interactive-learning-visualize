@@ -12,8 +12,8 @@ interface RequestQueueProps {
 
 export function RequestQueue({ steps, currentStepIndex, initialHead }: RequestQueueProps) {
     return (
-        <div className="glass-card p-5">
-            <div className="flex items-center justify-between mb-4">
+        <div className="glass-card p-4 sm:p-5">
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between mb-4">
                 <h2 className="font-mono font-semibold text-sm text-[var(--text-primary)] tracking-wide flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-[var(--accent-orange)]" />
                     I/O REQUEST QUEUE
@@ -24,7 +24,7 @@ export function RequestQueue({ steps, currentStepIndex, initialHead }: RequestQu
             </div>
 
             {/* Head origin */}
-            <div className="flex items-center gap-3 mb-2 p-2.5 rounded-lg bg-[rgba(247,144,0,0.06)] border border-[rgba(247,144,0,0.15)]">
+            <div className="flex flex-wrap items-start sm:items-center gap-3 mb-2 p-2.5 rounded-lg bg-[rgba(247,144,0,0.06)] border border-[rgba(247,144,0,0.15)]">
                 <div className="w-6 h-6 rounded-full bg-orange-500/20 border border-orange-500/40 flex items-center justify-center text-[9px] font-mono font-bold text-orange-400">
                     H
                 </div>
@@ -36,7 +36,7 @@ export function RequestQueue({ steps, currentStepIndex, initialHead }: RequestQu
             </div>
 
             {/* Request list */}
-            <div className="space-y-1.5 max-h-[340px] overflow-y-auto pr-1 terminal-scroll">
+            <div className="space-y-1.5 max-h-[300px] sm:max-h-[340px] overflow-y-auto pr-1 terminal-scroll">
                 <AnimatePresence>
                     {steps.map((step, idx) => {
                         const status =
@@ -76,7 +76,7 @@ export function RequestQueue({ steps, currentStepIndex, initialHead }: RequestQu
                                 </span>
 
                                 {/* Track number */}
-                                <div className="flex-1">
+                                <div className="min-w-0 flex-1">
                                     <span className="font-mono font-bold text-sm">
                                         Track <span className={
                                             status === "done" ? "text-green-400" :
@@ -88,7 +88,7 @@ export function RequestQueue({ steps, currentStepIndex, initialHead }: RequestQu
 
                                 {/* Seek distance */}
                                 {status !== "pending" && (
-                                    <div className="flex items-center gap-1">
+                                    <div className="ml-auto flex items-center gap-1">
                                         <Clock size={10} className="text-[var(--text-muted)]" />
                                         <span className="text-[10px] font-mono text-[var(--text-muted)]">
                                             +{step.seekDistance}

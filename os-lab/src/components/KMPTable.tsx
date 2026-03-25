@@ -10,7 +10,7 @@ interface KMPTableProps {
 export function KMPTable({ pattern }: KMPTableProps) {
     if (!pattern || pattern.length === 0) {
         return (
-            <div className="glass-card p-5">
+            <div className="glass-card p-4 sm:p-5">
                 <h2 className="font-mono font-semibold text-sm text-[var(--text-primary)] tracking-wide mb-3 flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-[var(--accent-yellow)]" />
                     KMP FAILURE FUNCTION (LPS TABLE)
@@ -23,8 +23,8 @@ export function KMPTable({ pattern }: KMPTableProps) {
     const lps = buildKMPTable(pattern);
 
     return (
-        <div className="glass-card p-5">
-            <div className="flex items-center justify-between mb-4">
+        <div className="glass-card p-4 sm:p-5">
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between mb-4">
                 <h2 className="font-mono font-semibold text-sm text-[var(--text-primary)] tracking-wide flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-[var(--accent-yellow)]" />
                     KMP FAILURE FUNCTION (LPS TABLE)
@@ -40,7 +40,7 @@ export function KMPTable({ pattern }: KMPTableProps) {
             </p>
 
             <div className="overflow-x-auto">
-                <table className="w-full border-collapse text-center">
+                <table className="w-full min-w-max border-collapse text-center">
                     <thead>
                         <tr>
                             <td className="text-[9px] font-mono text-[var(--text-muted)] px-2 py-1.5 text-left">Index</td>

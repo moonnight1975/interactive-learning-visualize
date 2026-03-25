@@ -130,17 +130,17 @@ export function PerformanceChart({ steps, currentStepIndex }: PerformanceChartPr
 
     if (visibleSteps.length === 0) {
         return (
-            <div className="glass-card p-5 flex items-center justify-center min-h-[200px]">
-                <div className="text-center">
-                    <BarChart2 size={32} className="text-[var(--text-muted)] mx-auto mb-2" />
-                    <p className="text-xs font-mono text-[var(--text-muted)]">Charts appear after simulation starts</p>
+        <div className="glass-card p-4 sm:p-5 flex items-center justify-center min-h-[200px]">
+            <div className="text-center">
+                <BarChart2 size={32} className="text-[var(--text-muted)] mx-auto mb-2" />
+                <p className="text-xs font-mono text-[var(--text-muted)]">Charts appear after simulation starts</p>
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="glass-card p-5 space-y-6">
+        <div className="glass-card p-4 sm:p-5 space-y-6">
             <div className="flex items-center gap-2 mb-2">
                 <BarChart2 size={14} className="text-[var(--accent-blue)]" />
                 <h2 className="font-mono font-semibold text-sm text-[var(--text-primary)] tracking-wide">
@@ -153,8 +153,10 @@ export function PerformanceChart({ steps, currentStepIndex }: PerformanceChartPr
                 <p className="text-[10px] font-mono text-[var(--text-muted)] uppercase tracking-wide mb-3">
                     Seek Distance per Request
                 </p>
-                <div style={{ height: 160 }}>
-                    <Line data={seekData} options={chartDefaults as Parameters<typeof Line>[0]["options"]} />
+                <div className="overflow-x-auto pb-1">
+                    <div className="min-w-[32rem]" style={{ height: 160 }}>
+                        <Line data={seekData} options={chartDefaults as Parameters<typeof Line>[0]["options"]} />
+                    </div>
                 </div>
             </div>
 
@@ -163,8 +165,10 @@ export function PerformanceChart({ steps, currentStepIndex }: PerformanceChartPr
                 <p className="text-[10px] font-mono text-[var(--text-muted)] uppercase tracking-wide mb-3">
                     String Comparisons per Block
                 </p>
-                <div style={{ height: 140 }}>
-                    <Bar data={compareData} options={chartDefaults as Parameters<typeof Bar>[0]["options"]} />
+                <div className="overflow-x-auto pb-1">
+                    <div className="min-w-[32rem]" style={{ height: 140 }}>
+                        <Bar data={compareData} options={chartDefaults as Parameters<typeof Bar>[0]["options"]} />
+                    </div>
                 </div>
             </div>
         </div>
