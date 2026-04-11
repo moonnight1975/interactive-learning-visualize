@@ -9,7 +9,7 @@
  */
 
 export interface WebSocketConfig {
-    algorithm_name: "FCFS" | "SSTF" | "SCAN";
+    algorithm_name: "FCFS" | "SSTF" | "SCAN" | "C-SCAN" | "LOOK" | "C-LOOK";
     initial_head: number;
     requests: number[];
     max_track?: number;

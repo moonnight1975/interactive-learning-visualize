@@ -5,7 +5,7 @@
  * Enhanced with timing metrics and performance delta.
  */
 
-export type OSAlgoName = "FCFS" | "SSTF" | "SCAN";
+export type OSAlgoName = "FCFS" | "SSTF" | "SCAN" | "C-SCAN" | "LOOK" | "C-LOOK";
 
 export type StorageType = "HDD" | "SSD" | "NVME";
 

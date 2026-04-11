@@ -13,7 +13,7 @@
 
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useRef } from "react";
 import { useShallow } from "zustand/react/shallow";
 import { motion, AnimatePresence } from "framer-motion";
 import { Header } from "@/components/Header";
@@ -56,6 +56,9 @@ const ALGORITHMS: { value: OSAlgorithm; label: string; desc: string }[] = [
     { value: "FCFS", label: "FCFS",  desc: "First Come, First Served" },
     { value: "SSTF", label: "SSTF",  desc: "Shortest Seek Time First" },
     { value: "SCAN", label: "SCAN",  desc: "Elevator Algorithm" },
+    { value: "C-SCAN", label: "C-SCAN", desc: "Circular SCAN" },
+    { value: "LOOK", label: "LOOK",  desc: "Look-ahead Elevator" },
+    { value: "C-LOOK", label: "C-LOOK", desc: "Circular LOOK" },
 ];
 
 const STORAGE_TYPES: { value: StorageType; label: string; desc: string; color: string }[] = [
@@ -85,6 +88,7 @@ export default function OSMode() {
     const [headError, setHeadError] = useState("");
     const [tracksError, setTracksError] = useState("");
     const [directionParam, setDirectionParam] = useState<"UP" | "DOWN">("UP");
+    const visualizerRef = useRef<HTMLDivElement>(null);
 
     // ── Zustand store reads ──────────────────────────────────────────────────
     const algorithm      = useSimulationStore((s) => s.algorithm);
@@ -213,6 +217,13 @@ export default function OSMode() {
         }
 
         play();
+        
+        // Auto-scroll to visualizer on mobile
+        if (window.innerWidth < 1280) {
+            setTimeout(() => {
+                visualizerRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+            }, 150);
+        }
     }, [validateWorkload, directionParam, algorithm, diskConfig, setInitialHead, setRequests, setParams, play, addLog]);
 
     const handleRunAlgorithmProfile = useCallback(() => {
@@ -224,12 +235,12 @@ export default function OSMode() {
 
         addLog(
             "system",
-            `Profiling FCFS, SSTF, and SCAN on ${diskConfig.storageType}${diskConfig.storageType === "HDD" ? ` @ ${diskConfig.rpm} RPM` : ""}.`
+            `Profiling all scheduling algorithms on ${diskConfig.storageType}${diskConfig.storageType === "HDD" ? ` @ ${diskConfig.rpm} RPM` : ""}.`
         );
 
         void runCompare({
             requests: workload.tracks,
-            algorithms: ["FCFS", "SSTF", "SCAN"],
+            algorithms: ["FCFS", "SSTF", "SCAN", "C-SCAN", "LOOK", "C-LOOK"],
             head_start: workload.head,
             max_track: 199,
             direction: directionParam,
@@ -323,7 +334,7 @@ export default function OSMode() {
                                 <label className="block text-[10px] font-mono text-[var(--text-muted)] uppercase mb-2 tracking-wider">
                                     Algorithm
                                 </label>
-                                <div className="grid grid-cols-3 gap-1.5">
+                                <div className="grid grid-cols-3 gap-1.5 sm:gap-2">
                                     {ALGORITHMS.map(({ value, label, desc }) => (
                                         <button
                                             key={value}
@@ -347,7 +358,7 @@ export default function OSMode() {
                                 <label className="block text-[10px] font-mono text-[var(--text-muted)] uppercase mb-2 tracking-wider">
                                     Storage Type
                                 </label>
-                                <div className="grid grid-cols-3 gap-1.5">
+                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-1.5 sm:gap-2">
                                     {STORAGE_TYPES.map(({ value, label, desc, color }) => (
                                         <button
                                             key={value}
@@ -385,7 +396,7 @@ export default function OSMode() {
                                         <label className="block text-[10px] font-mono text-[var(--text-muted)] uppercase mb-2 tracking-wider">
                                             Disk RPM
                                         </label>
-                                        <div className="grid grid-cols-4 gap-1.5">
+                                        <div className="grid grid-cols-2 md:grid-cols-4 gap-1.5 sm:gap-2">
                                             {RPM_OPTIONS.map((r) => (
                                                 <button
                                                     key={r}
@@ -530,7 +541,7 @@ export default function OSMode() {
                     </div>
 
                     {/* ── Right columns: visualization ── */}
-                    <div className="xl:col-span-2 flex flex-col gap-5">
+                    <div ref={visualizerRef} className="xl:col-span-2 flex flex-col gap-5 pt-4 xl:pt-0 border-t xl:border-t-0 border-white/5 scroll-mt-20">
                         {isIdle ? (
                             <motion.div
                                 initial={{ opacity: 0 }}

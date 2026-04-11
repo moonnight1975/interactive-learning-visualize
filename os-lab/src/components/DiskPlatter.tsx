@@ -58,7 +58,8 @@ export function DiskPlatter({
     useEffect(() => {
         const updateSize = () => {
             const w = window.innerWidth;
-            if (w < 640) setCanvasSize(280);
+            if (w < 400) setCanvasSize(w - 60); // Dynamic for very narrow screens like iPhone SE
+            else if (w < 640) setCanvasSize(280);
             else if (w < 1024) setCanvasSize(340);
             else setCanvasSize(380);
         };

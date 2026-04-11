@@ -16,7 +16,7 @@ import type { WsSimulationStep, WsMetricSet, WebSocketConfig } from "./wsClient"
 
 export type WsStatus = "idle" | "connecting" | "open" | "closed" | "error";
 
-export type OSAlgorithm = "FCFS" | "SSTF" | "SCAN";
+export type OSAlgorithm = "FCFS" | "SSTF" | "SCAN" | "C-SCAN" | "LOOK" | "C-LOOK";
 
 export type StorageType = "HDD" | "SSD" | "NVME";
 

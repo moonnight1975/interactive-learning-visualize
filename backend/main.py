@@ -161,7 +161,7 @@ class PageFaultEngine:
 # ─── OS Simulation Models ────────────────────────────────────────────────────
 
 class OSSimulationConfig(BaseModel):
-    algorithm_name: Literal["FCFS", "SSTF", "SCAN"]
+    algorithm_name: Literal["FCFS", "SSTF", "SCAN", "C-SCAN", "LOOK", "C-LOOK"]
     initial_head: int
     requests: List[int]
     max_track: int = 199
@@ -438,10 +438,167 @@ class SCAN(OSAlgorithm):
             yield _emit_step(target, reason, pending)
 
 
+class CSCAN(OSAlgorithm):
+    def step_generator(self):
+        pending = self.requests.copy()
+        direction = self.params.get('direction', 'UP')
+        max_track = self.params.get('max_track', 199)
+        min_track = 0
+
+        def _emit_step(target: int, reason: str, queue: List[int]) -> OSSimulationStep:
+            seek_dist = abs(target - self.current_head)
+            self.cumulative_seek += seek_dist
+            timing = self._compute_timing(seek_dist, target)
+            pf = timing.get("page_fault_info")
+            if pf and pf["page_fault"]:
+                reason += f" PAGE FAULT: page {pf['page_id']} loaded."
+            self.current_head = target
+            self.sequence.append(target)
+            self.step_index += 1
+            return OSSimulationStep(
+                step_index=self.step_index, head_position=target, queue_state=queue.copy(),
+                seek_distance_this_step=seek_dist, cumulative_seek=self.cumulative_seek,
+                algorithm_decision_reason=reason, seek_time_ms=timing["seek_time_ms"],
+                rotational_latency_ms=timing["rotational_latency_ms"], transfer_time_ms=timing["transfer_time_ms"],
+                total_access_time_ms=timing["total_access_time_ms"], cumulative_time_ms=timing["cumulative_time_ms"],
+                throughput_mbps=timing["throughput_mbps"], target_sector=timing["target_sector"],
+                current_rotation_angle=timing["current_rotation_angle"], page_fault=pf["page_fault"] if pf else None,
+                page_fault_penalty_ms=pf["penalty_ms"] if pf else 0, memory_state=pf["memory_state"] if pf else None,
+                evicted_page=pf["evicted_page"] if pf else None,
+            )
+
+        while pending:
+            if direction == 'UP':
+                candidates = sorted([r for r in pending if r >= self.current_head])
+                if not candidates:
+                    if self.current_head != max_track:
+                        yield _emit_step(max_track, f"Sweeping up to boundary {max_track}.", pending)
+                    yield _emit_step(min_track, f"Jumping to boundary {min_track}.", pending)
+                    direction = 'UP'
+                    continue
+                else:
+                    target = candidates[0]
+                    reason = "Sweeping UP."
+            else:
+                candidates = sorted([r for r in pending if r <= self.current_head], reverse=True)
+                if not candidates:
+                    if self.current_head != min_track:
+                        yield _emit_step(min_track, f"Sweeping down to boundary {min_track}.", pending)
+                    yield _emit_step(max_track, f"Jumping to boundary {max_track}.", pending)
+                    direction = 'DOWN'
+                    continue
+                else:
+                    target = candidates[0]
+                    reason = "Sweeping DOWN."
+
+            pending.remove(target)
+            yield _emit_step(target, reason, pending)
+
+
+class LOOK(OSAlgorithm):
+    def step_generator(self):
+        pending = self.requests.copy()
+        direction = self.params.get('direction', 'UP')
+
+        def _emit_step(target: int, reason: str, queue: List[int]) -> OSSimulationStep:
+            seek_dist = abs(target - self.current_head)
+            self.cumulative_seek += seek_dist
+            timing = self._compute_timing(seek_dist, target)
+            pf = timing.get("page_fault_info")
+            if pf and pf["page_fault"]:
+                reason += f" PAGE FAULT: page {pf['page_id']} loaded."
+            self.current_head = target
+            self.sequence.append(target)
+            self.step_index += 1
+            return OSSimulationStep(
+                step_index=self.step_index, head_position=target, queue_state=queue.copy(),
+                seek_distance_this_step=seek_dist, cumulative_seek=self.cumulative_seek,
+                algorithm_decision_reason=reason, seek_time_ms=timing["seek_time_ms"],
+                rotational_latency_ms=timing["rotational_latency_ms"], transfer_time_ms=timing["transfer_time_ms"],
+                total_access_time_ms=timing["total_access_time_ms"], cumulative_time_ms=timing["cumulative_time_ms"],
+                throughput_mbps=timing["throughput_mbps"], target_sector=timing["target_sector"],
+                current_rotation_angle=timing["current_rotation_angle"], page_fault=pf["page_fault"] if pf else None,
+                page_fault_penalty_ms=pf["penalty_ms"] if pf else 0, memory_state=pf["memory_state"] if pf else None,
+                evicted_page=pf["evicted_page"] if pf else None,
+            )
+
+        while pending:
+            if direction == 'UP':
+                candidates = sorted([r for r in pending if r >= self.current_head])
+                if not candidates:
+                    direction = 'DOWN'
+                    target = max(pending)
+                    reason = "No more requests UP. Reversing to DOWN."
+                else:
+                    target = candidates[0]
+                    reason = "Scanning UP to nearest request."
+            else:
+                candidates = sorted([r for r in pending if r <= self.current_head], reverse=True)
+                if not candidates:
+                    direction = 'UP'
+                    target = min(pending)
+                    reason = "No more requests DOWN. Reversing to UP."
+                else:
+                    target = candidates[0]
+                    reason = "Scanning DOWN to nearest request."
+
+            pending.remove(target)
+            yield _emit_step(target, reason, pending)
+
+
+class CLOOK(OSAlgorithm):
+    def step_generator(self):
+        pending = self.requests.copy()
+        direction = self.params.get('direction', 'UP')
+
+        def _emit_step(target: int, reason: str, queue: List[int]) -> OSSimulationStep:
+            seek_dist = abs(target - self.current_head)
+            self.cumulative_seek += seek_dist
+            timing = self._compute_timing(seek_dist, target)
+            pf = timing.get("page_fault_info")
+            if pf and pf["page_fault"]:
+                reason += f" PAGE FAULT: page {pf['page_id']} loaded."
+            self.current_head = target
+            self.sequence.append(target)
+            self.step_index += 1
+            return OSSimulationStep(
+                step_index=self.step_index, head_position=target, queue_state=queue.copy(),
+                seek_distance_this_step=seek_dist, cumulative_seek=self.cumulative_seek,
+                algorithm_decision_reason=reason, seek_time_ms=timing["seek_time_ms"],
+                rotational_latency_ms=timing["rotational_latency_ms"], transfer_time_ms=timing["transfer_time_ms"],
+                total_access_time_ms=timing["total_access_time_ms"], cumulative_time_ms=timing["cumulative_time_ms"],
+                throughput_mbps=timing["throughput_mbps"], target_sector=timing["target_sector"],
+                current_rotation_angle=timing["current_rotation_angle"], page_fault=pf["page_fault"] if pf else None,
+                page_fault_penalty_ms=pf["penalty_ms"] if pf else 0, memory_state=pf["memory_state"] if pf else None,
+                evicted_page=pf["evicted_page"] if pf else None,
+            )
+
+        while pending:
+            if direction == 'UP':
+                candidates = sorted([r for r in pending if r >= self.current_head])
+                if not candidates:
+                    target = min(pending)
+                    reason = "Circular jump to lowest request."
+                else:
+                    target = candidates[0]
+                    reason = "Scanning UP to nearest request."
+            else:
+                candidates = sorted([r for r in pending if r <= self.current_head], reverse=True)
+                if not candidates:
+                    target = max(pending)
+                    reason = "Circular jump to highest request."
+                else:
+                    target = candidates[0]
+                    reason = "Scanning DOWN to nearest request."
+
+            pending.remove(target)
+            yield _emit_step(target, reason, pending)
+
+
 class OSSimulationEngine:
     def __init__(self, config: OSSimulationConfig, max_steps: int = 10000):
         self.config = config; self.max_steps = max_steps
-        algo_cls = {"FCFS": FCFS, "SSTF": SSTF, "SCAN": SCAN}.get(config.algorithm_name)
+        algo_cls = {"FCFS": FCFS, "SSTF": SSTF, "SCAN": SCAN, "C-SCAN": CSCAN, "LOOK": LOOK, "C-LOOK": CLOOK}.get(config.algorithm_name)
         self.algo = algo_cls(
             requests=config.requests,
             params={
@@ -708,7 +865,7 @@ class AOASimulationEngine:
 
 class ComparisonRequest(BaseModel):
     requests: List[int] = Field(..., min_length=1, max_length=200)
-    algorithms: List[Literal["FCFS", "SSTF", "SCAN"]] = Field(..., min_length=2, max_length=5)
+    algorithms: List[Literal["FCFS", "SSTF", "SCAN", "C-SCAN", "LOOK", "C-LOOK"]] = Field(..., min_length=2, max_length=6)
     head_start: int = Field(default=53, ge=0, le=199)
     max_track: int = Field(default=199, ge=1, le=999)
     direction: Literal["UP", "DOWN"] = "UP"
@@ -758,7 +915,7 @@ def _run_algorithm_sync(
         "rpm": rpm,
         "storage_type": storage_type,
     }
-    algo_cls = {"FCFS": FCFS, "SSTF": SSTF, "SCAN": SCAN}[algo_name]
+    algo_cls = {"FCFS": FCFS, "SSTF": SSTF, "SCAN": SCAN, "C-SCAN": CSCAN, "LOOK": LOOK, "C-LOOK": CLOOK}[algo_name]
     algo = algo_cls(requests=requests, params=params)
 
     seek_distances: List[int] = []

@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import type { CompareResponse, StorageCompareResponse, AlgorithmComparisonResult } from "@/lib/compareTypes";
 import type { OSAlgorithm, StorageType } from "@/lib/simulationStore";
+import { OSComparisonChart } from "@/components/OSComparisonChart";
 
 interface OptimizationProfilerProps {
     requestCount: number;
@@ -182,7 +183,7 @@ export function OptimizationProfiler({
                     className="flex items-center justify-center gap-2 rounded-xl border border-cyan-500/25 bg-cyan-500/10 px-4 py-3 font-mono text-[11px] font-bold text-cyan-300 transition-all hover:bg-cyan-500/16 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                     {compareLoading ? <Loader2 size={14} className="animate-spin" /> : <BarChart3 size={14} />}
-                    PROFILE FCFS / SSTF / SCAN
+                    PROFILE ALL ALGORITHMS
                 </button>
                 <button
                     onClick={onRunStorageBenchmark}
@@ -247,6 +248,8 @@ export function OptimizationProfiler({
                             <AlgorithmCard key={result.algorithm} result={result} />
                         ))}
                     </div>
+                    
+                    <OSComparisonChart compareData={compareData} />
                 </section>
             )}
 
