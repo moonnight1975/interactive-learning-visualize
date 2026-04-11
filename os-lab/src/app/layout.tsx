@@ -2,13 +2,13 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "OS Lab — Disk Scheduling & String Matching Simulator",
-  description: "An interactive Operating System learning platform that visually simulates Disk Scheduling (FCFS) and String Matching algorithms (Naive/KMP) with real-time animations and performance analytics.",
-  keywords: "disk scheduling, FCFS, string matching, KMP, operating system, simulation, OS lab",
-  authors: [{ name: "OS Lab" }],
+  title: "NGILP — I/O Simulation & Optimization Lab",
+  description: "Next Generation Interactive Learning Platform. Physics-accurate disk simulation with rotational latency, HDD/SSD/NVMe comparison, page fault visualization, and string matching algorithm analysis (Naive, KMP, Rabin-Karp, Boyer-Moore).",
+  keywords: "disk scheduling, FCFS, SSTF, SCAN, rotational latency, SSD, NVMe, page fault, string matching, KMP, operating system, simulation, NGILP",
+  authors: [{ name: "NGILP" }],
   openGraph: {
-    title: "OS Lab — Disk Scheduling & String Matching Simulator",
-    description: "Interactive OS simulation platform for disk scheduling and string pattern matching",
+    title: "NGILP — I/O Simulation & Optimization Lab",
+    description: "Physics-accurate interactive OS simulation platform with disk scheduling, storage comparison, and string pattern matching",
     type: "website",
   },
 };

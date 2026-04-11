@@ -39,7 +39,7 @@ export interface PatternBreakdown {
 }
 
 export interface StringMatchResult {
-    algorithm: "naive" | "kmp" | "multi-kmp";
+    algorithm: "naive" | "kmp" | "multi-kmp" | "rabin-karp" | "boyer-moore";
     pattern: string;
     primaryPattern: string;
     text: string;

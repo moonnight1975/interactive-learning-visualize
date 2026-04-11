@@ -12,7 +12,7 @@ import {
 } from "chart.js";
 import { Bar } from "react-chartjs-2";
 import { motion } from "framer-motion";
-import { TrendingDown, Award, AlertTriangle, Lightbulb, BarChart3 } from "lucide-react";
+import { TrendingDown, Award, AlertTriangle, Lightbulb, BarChart3, Gauge, Clock } from "lucide-react";
 import { DualSimResult } from "@/lib/simulation";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
@@ -365,6 +365,37 @@ export function ComparisonResults({
                         </span>
                     </div>
                 </div>
+
+                {/* Performance Delta Natural Language (NGILP) */}
+                {isComplete && (
+                    <motion.div
+                        initial={{ opacity: 0, y: 8 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="rounded-lg p-4 bg-[rgba(56,139,253,0.04)] border border-[rgba(56,139,253,0.15)]"
+                    >
+                        <div className="flex items-center gap-2 mb-2">
+                            <Gauge size={13} className="text-[var(--accent-cyan)]" />
+                            <span className="text-[10px] font-mono font-bold text-[var(--accent-cyan)] uppercase">
+                                Performance Delta Analysis
+                            </span>
+                        </div>
+                        <p className="text-[11px] font-mono text-[var(--text-secondary)] leading-5">
+                            {winner === "sstf" 
+                                ? `SSTF improved performance by ${improvement.toFixed(1)}% over FCFS due to reduced head movement (${sstfTotal} vs ${fcfsTotal} tracks, saving ${fcfsTotal - sstfTotal} seek operations). SSTF's greedy nearest-track selection eliminates the long-distance zigzag pattern inherent in FCFS's arrival-order processing.`
+                                : winner === "fcfs"
+                                ? `FCFS outperformed SSTF in this specific case by ${Math.abs(improvement).toFixed(1)}%. This is unusual and typically occurs when requests happen to arrive in near-optimal spatial order, making FCFS's linear processing accidentally efficient.`
+                                : `Both algorithms produced identical total seek distances (${fcfsTotal} tracks). This typically occurs with very few requests or when the request pattern doesn't benefit from reordering.`
+                            }
+                        </p>
+                        <div className="mt-2 flex items-center gap-2">
+                            <Clock size={10} className="text-[var(--text-muted)]" />
+                            <span className="text-[9px] font-mono text-[var(--text-muted)]">
+                                Note: Total I/O time includes seek time + rotational latency. 
+                                Enable the full physics engine in OS Mode for timing analysis.
+                            </span>
+                        </div>
+                    </motion.div>
+                )}
             </div>
         </div>
     );

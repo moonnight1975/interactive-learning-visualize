@@ -2,9 +2,16 @@
 
 An interactive teaching project that combines Operating Systems concepts with Analysis of Algorithms in one visual web app.
 
-The repository centers on a Next.js application in `os-lab/` that lets students explore:
+The repository now ships as a two-part platform:
 
-- Disk scheduling with `FCFS` and `SSTF`
+- `os-lab/` — the Next.js frontend and NGILP user experience
+- `backend/` — the FastAPI simulation engine, comparison APIs, and WebSocket streams
+
+Together they let students explore:
+
+- Physics-aware disk scheduling with `FCFS`, `SSTF`, and `SCAN`
+- HDD vs SSD vs NVMe storage benchmarking
+- Rotational latency, throughput, and page fault penalties in one timing model
 - String matching with `Naive` and `KMP`
 - Real file-backed simulations using uploaded text and log files
 - Step-by-step playback, algorithm comparison, charts, and terminal-style logs
@@ -38,8 +45,10 @@ Route: `/os`
 
 Focused only on disk scheduling.
 
-- Simulates `FCFS` and `SSTF`
-- Visualizes queue order, seek path, and total seek time
+- Simulates `FCFS`, `SSTF`, and `SCAN`
+- Visualizes queue order, seek path, spinning platter timing, and total seek time
+- Profiles algorithm deltas on the active workload
+- Benchmarks the same workload across HDD, SSD, and NVMe
 - Supports manual track input and file-backed tracks
 
 ### AOA Mode
@@ -54,15 +63,19 @@ Focused only on string matching.
 
 ## Key Features
 
-- Interactive visualizations for disk movement and request processing
+- FastAPI + WebSocket simulation backend for streamed execution
+- Interactive visualizations for disk movement, platter rotation, and request processing
 - Deterministic file-to-disk block mapping for repeatable demos
 - Multi-pattern watchlists with case-sensitive and whole-word search options
 - Log signal extraction for keywords like `error`, `warning`, `timeout`, and `denied`
-- Performance dashboards and charts for comparison-based learning
+- Performance dashboards with seek time, rotational delay, throughput, and page fault metrics
+- Optimization profiler for algorithm ranking and storage-class benchmarking
 - Mobile-friendly responsive UI
 
 ## Tech Stack
 
+- FastAPI
+- Python AsyncIO
 - Next.js 16
 - React 19
 - TypeScript
@@ -71,12 +84,14 @@ Focused only on string matching.
 - GSAP
 - Chart.js with `react-chartjs-2`
 - Lucide React
+- WebSockets
 
 ## Repository Structure
 
 ```text
 os+aoa/
 ├── attack_log.txt        # Sample file for demos
+├── backend/              # FastAPI simulation and comparison engine
 ├── os-lab/               # Next.js application
 │   ├── src/app/          # App Router pages
 │   ├── src/components/   # Visual and control components
@@ -91,8 +106,16 @@ os+aoa/
 
 - Node.js 20+ recommended
 - npm
+- Python 3.11+ recommended
 
 ### Install and Run
+
+```bash
+cd backend
+python3 -m uvicorn main:app --host 127.0.0.1 --port 8000
+```
+
+In a second terminal:
 
 ```bash
 cd os-lab
@@ -110,6 +133,13 @@ npm run build
 npm start
 ```
 
+Backend production-style run:
+
+```bash
+cd backend
+python3 main.py
+```
+
 ## Available Scripts
 
 Inside `os-lab/`:
@@ -118,6 +148,11 @@ Inside `os-lab/`:
 - `npm run build` - create a production build with Webpack
 - `npm start` - start the production server
 - `npm run lint` - run the lint script
+
+Inside `backend/`:
+
+- `python3 main.py` - run the FastAPI app directly
+- `python3 -m uvicorn main:app --host 127.0.0.1 --port 8000` - run the backend with uvicorn
 
 ## How File-Backed Simulation Works
 

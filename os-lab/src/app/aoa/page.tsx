@@ -1,23 +1,32 @@
 "use client";
 
-import { useState, useCallback, useRef, useEffect } from "react";
+import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Header } from "@/components/Header";
 import { StringMatchPanel } from "@/components/StringMatchPanel";
 import { TerminalLog, type LogEntry } from "@/components/TerminalLog";
 import { KMPTable } from "@/components/KMPTable";
 import { FileUpload } from "@/components/FileUpload";
-import {
-    naiveMatch,
-    kmpMatch,
-    compareAlgorithms,
-    createPatternSearchConfig,
-    type StringMatchResult,
-    type AlgorithmComparison,
-    parseSearchTerms,
-} from "@/lib/simulation";
+import { createPatternSearchConfig, type StringMatchResult, type AlgorithmComparison } from "@/lib/simulation";
 import type { ParsedFile } from "@/lib/fileParser";
 import { Play, RotateCcw } from "lucide-react";
+import { StringSimulationClient, type StringMetricSet, type StringSimulationConfig } from "@/lib/wsClient";
+
+type AOAAlgorithm = "naive" | "kmp" | "rabin_karp" | "boyer_moore" | "compare";
+
+const algorithmToRemoteName: Record<Exclude<AOAAlgorithm, "compare">, StringSimulationConfig["algorithm_name"]> = {
+    naive: "NAIVE",
+    kmp: "KMP",
+    rabin_karp: "RABIN_KARP",
+    boyer_moore: "BOYER_MOORE",
+};
+
+const algorithmToResultName: Record<Exclude<AOAAlgorithm, "compare">, StringMatchResult["algorithm"]> = {
+    naive: "naive",
+    kmp: "kmp",
+    rabin_karp: "rabin-karp",
+    boyer_moore: "boyer-moore",
+};
 
 let logId = 0;
 function makeLog(type: LogEntry["type"], message: string): LogEntry {
@@ -32,14 +41,14 @@ function makeLog(type: LogEntry["type"], message: string): LogEntry {
 export default function AOAMode() {
     const [textInput, setTextInput] = useState("The kernel is the core of the operating system. It manages processes, memory, and devices.");
     const [query, setQuery] = useState("kernel");
-    const [algorithm, setAlgorithm] = useState<"naive" | "kmp" | "compare">("compare");
+    const [algorithm, setAlgorithm] = useState<AOAAlgorithm>("compare");
     const [caseSensitive, setCaseSensitive] = useState(false);
     const [wholeWord, setWholeWord] = useState(true);
 
     const [parsedFile, setParsedFile] = useState<ParsedFile | null>(null);
     const [logs, setLogs] = useState<LogEntry[]>([
-        makeLog("system", "Algorithm Analysis Mode Initialized"),
-        makeLog("info", "Enter text and a pattern to analyze string matching algorithms."),
+        makeLog("system", "Algorithm Analysis Remote Mode Initialized"),
+        makeLog("info", "Connects dynamically to remote WebSockets to execute complex String Matching"),
     ]);
 
     const [result, setResult] = useState<StringMatchResult | null>(null);
@@ -52,14 +61,11 @@ export default function AOAMode() {
     const handleFileParsed = useCallback(
         (parsed: ParsedFile) => {
             setParsedFile(parsed);
-            
-            // Extract some text from file
             const combinedText = parsed.blocks.slice(0, 10).map(b => b.content).join(" ");
             setTextInput(combinedText);
-            
             setQuery(parsed.recommendedQuery || parsed.topKeywords[0] || "");
             addLog("system", `File loaded: "${parsed.name}"`);
-            addLog("info", `Extracted text from first few blocks for analysis.`);
+            addLog("info", `Extracted text from first few blocks for remote analysis.`);
         },
         [addLog]
     );
@@ -73,6 +79,33 @@ export default function AOAMode() {
         setQuery(q);
         addLog("info", `Loaded search profile: ${q}`);
     }, [addLog]);
+
+    const mapMetricsToMatchResult = (
+        metrics: StringMetricSet,
+        algoName: AOAAlgorithm,
+        primary: string,
+        text: string,
+        config: ReturnType<typeof createPatternSearchConfig>
+    ): StringMatchResult => {
+        const occurrences = metrics.matches.map(idx => ({ start: idx, end: idx + primary.length, pattern: primary }));
+        return {
+            algorithm: algoName === "compare" ? "naive" : algorithmToResultName[algoName],
+            pattern: config.rawQuery,
+            primaryPattern: primary,
+            text: text,
+            matches: metrics.matches,
+            occurrences,
+            comparisons: metrics.total_comparisons,
+            executionTimeMs: metrics.execution_time_ms,
+            found: metrics.matches.length > 0,
+            matchedPatterns: metrics.matches.length > 0 ? [primary] : [],
+            patternBreakdown: metrics.pattern_breakdown,
+            options: {
+                caseSensitive: config.caseSensitive,
+                wholeWord: config.wholeWord,
+            }
+        };
+    };
 
     const handleAnalyze = () => {
         logId = 0;
@@ -93,35 +126,72 @@ export default function AOAMode() {
             return;
         }
 
-        addLog("system", `Starting Algorithm Analysis`);
-        addLog("info", `Target Pattern: "${primary}"`);
-        addLog("info", `Text Length: ${textInput.length} characters`);
+        addLog("system", `Dispatching Real-Time Simulation to Edge Worker`);
+        addLog("info", `Target Pattern: "${primary}" | Mode: ${algorithm.toUpperCase()}`);
 
         if (algorithm === "compare") {
-            const comp = compareAlgorithms(config, textInput, { caseSensitive, wholeWord });
-            setComparison(comp);
-            addLog("success", `Comparison Complete.`);
-            addLog("info", `Naive: ${comp.naive.comparisons} comparisons. KMP: ${comp.kmp.comparisons} comparisons.`);
-            if (comp.winner !== "tie") {
-                addLog("success", `${comp.winner.toUpperCase()} was faster by ${comp.speedupFactor.toFixed(2)}x factor.`);
-            } else {
-                addLog("info", `Both algorithms took the same number of comparisons.`);
-            }
-        } else if (algorithm === "naive") {
-            const res = naiveMatch(config, textInput, { caseSensitive, wholeWord });
-            setResult(res);
-            addLog("success", `Naive Match Complete. Found ${res.matches.length} matches in ${res.comparisons} comparisons.`);
+            addLog("info", `Initiating parallel network requests...`);
+            
+            let naiveMetrics: StringMetricSet | null = null;
+            let kmpMetrics: StringMetricSet | null = null;
+            
+            const attemptMerge = () => {
+                if (naiveMetrics && kmpMetrics) {
+                     const comp: AlgorithmComparison = {
+                         naive: mapMetricsToMatchResult(naiveMetrics, "naive", primary, textInput, config),
+                         kmp: mapMetricsToMatchResult(kmpMetrics, "kmp", primary, textInput, config),
+                         lpsTable: [], 
+                         winner: naiveMetrics.total_comparisons < kmpMetrics.total_comparisons ? "naive" : kmpMetrics.total_comparisons < naiveMetrics.total_comparisons ? "kmp" : "tie",
+                         speedupFactor: naiveMetrics.total_comparisons > 0 ? naiveMetrics.total_comparisons / Math.max(kmpMetrics.total_comparisons, 1) : 1
+                     };
+                     setComparison(comp);
+                     addLog("success", `Comparison Evaluation Completed.`);
+                }
+            };
+
+            const naiveClient = new StringSimulationClient();
+            naiveClient.executeSimulation({ algorithm_name: "NAIVE", text: textInput, pattern: primary, case_sensitive: caseSensitive, whole_word: wholeWord },
+               (step) => {},
+               (metrics) => { naiveMetrics = metrics; attemptMerge(); addLog("success", "NAIVE Worker finished."); },
+               (err) => addLog("error", "NAIVE Error: " + err)
+            );
+
+            const kmpClient = new StringSimulationClient();
+            kmpClient.executeSimulation({ algorithm_name: "KMP", text: textInput, pattern: primary, case_sensitive: caseSensitive, whole_word: wholeWord },
+               (step) => {}, 
+               (metrics) => { kmpMetrics = metrics; attemptMerge(); addLog("success", "KMP Worker finished."); },
+               (err) => addLog("error", "KMP Error: " + err)
+            );
+            
         } else {
-            const res = kmpMatch(config, textInput, { caseSensitive, wholeWord });
-            setResult(res);
-            addLog("success", `KMP Match Complete. Found ${res.matches.length} matches in ${res.comparisons} comparisons.`);
+            const singleClient = new StringSimulationClient();
+            let stepsHandled = 0;
+            singleClient.executeSimulation({ 
+                 algorithm_name: algorithmToRemoteName[algorithm], text: textInput, pattern: primary, case_sensitive: caseSensitive, whole_word: wholeWord 
+               },
+               (step) => {
+                   stepsHandled++;
+                   if (step.pointers.match_found) {
+                       addLog("success", `[FastAPI WS] Match identified exactly at tracking index ${step.pointers.i}.`);
+                   } else if (stepsHandled % 100 === 0) {
+                       // Sample stream to prevent console flooding
+                       addLog("info", `[FastAPI WS] Computed ${stepsHandled} steps... ${step.algorithm_decision_reason}`);
+                   }
+               },
+               (metrics) => {
+                   addLog("success", `Network stream matching complete. Processed ${metrics.total_comparisons} comparisons remotely.`);
+                   const res = mapMetricsToMatchResult(metrics, algorithm, primary, textInput, config);
+                   setResult(res);
+               },
+               (err) => addLog("error", "Backend Stream Error: " + err)
+            );
         }
     };
 
     const handleReset = () => {
         setResult(null);
         setComparison(null);
-        setLogs([makeLog("system", "Analyzer Reset")]);
+        setLogs([makeLog("system", "Remote Analyzer Reset")]);
     };
 
     return (
@@ -143,7 +213,7 @@ export default function AOAMode() {
                         ALGORITHM ANALYSIS MODE
                     </h1>
                     <p className="text-sm font-mono text-gray-400">
-                        Pure String Matching Environment
+                        Remote Render Layer Architecture
                     </p>
                 </motion.div>
 
@@ -164,11 +234,13 @@ export default function AOAMode() {
                                     <label className="block text-xs font-mono text-gray-400 mb-1.5">ALGORITHM</label>
                                     <select 
                                         value={algorithm}
-                                        onChange={(e) => setAlgorithm(e.target.value as any)}
+                                        onChange={(e) => setAlgorithm(e.target.value as AOAAlgorithm)}
                                         className="w-full bg-[#0a0f1c] border border-blue-500/20 rounded-lg p-2 text-sm text-gray-200 focus:outline-none focus:border-blue-500/50"
                                     >
                                         <option value="naive">Naive String Matching</option>
                                         <option value="kmp">KMP (Knuth-Morris-Pratt)</option>
+                                        <option value="rabin_karp">Rabin-Karp Rolling Hash</option>
+                                        <option value="boyer_moore">Boyer-Moore</option>
                                         <option value="compare">Compare Both</option>
                                     </select>
                                 </div>
@@ -211,7 +283,7 @@ export default function AOAMode() {
 
                                 <div className="flex gap-3 pt-2">
                                     <button onClick={handleAnalyze} className="flex-1 bg-blue-600 hover:bg-blue-500 text-white font-mono text-sm py-2 rounded-lg transition-colors flex items-center justify-center gap-2">
-                                        <Play size={14} /> ANALYZE
+                                        <Play size={14} /> ANALYZE REMOTE
                                     </button>
                                     <button onClick={handleReset} className="px-4 bg-gray-800 hover:bg-gray-700 text-gray-300 font-mono text-sm rounded-lg transition-colors flex items-center justify-center">
                                         <RotateCcw size={14} />
@@ -283,7 +355,6 @@ export default function AOAMode() {
                                         </div>
                                     )}
 
-                                    {/* Create a pseudo-step to use StringMatchPanel */}
                                     <div className="mt-4">
                                         <h3 className="font-mono text-gray-400 mb-2">MATCH VISUALIZATION</h3>
                                         <StringMatchPanel 
@@ -346,7 +417,7 @@ export default function AOAMode() {
                                     <div className="text-center">
                                         <div className="text-4xl mb-4">🔍</div>
                                         <h3 className="text-lg font-mono text-gray-400">WAITING FOR INPUT</h3>
-                                        <p className="text-sm text-gray-600">Configure parameters and click Analyze.</p>
+                                        <p className="text-sm text-gray-600">Configure parameters and click Analyze Remote.</p>
                                     </div>
                                 </div>
                             )}

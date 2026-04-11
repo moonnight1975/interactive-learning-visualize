@@ -9,31 +9,43 @@ const modes = [
     {
         title: "AOA Mode",
         subtitle: "Algorithm Analysis",
-        description: "Pure string matching learning environment. Visualize Naive and KMP algorithms with step-by-step execution.",
+        description: "Visualize Naive, KMP, Rabin-Karp, and Boyer-Moore algorithms with step-by-step execution, complexity analysis, and comparison profiling.",
         href: "/aoa",
         gradient: "from-blue-500/20 to-cyan-500/20",
         border: "border-blue-500/30",
-        icon: "🔍"
+        icon: "🔍",
+        tag: "O(n) vs O(n×m)",
+        tagColor: "text-blue-400",
     },
     {
         title: "AOA + OS Mode",
         subtitle: "Integrated System",
-        description: "Explore the full interaction between Disk Scheduling (FCFS/SSTF) and advanced pattern detection on real disk blocks.",
+        description: "Explore the full interaction between Disk Scheduling (FCFS/SSTF/SCAN) and advanced pattern detection with real disk block analysis.",
         href: "/combined",
         gradient: "from-purple-500/20 to-pink-500/20",
         border: "border-purple-500/30",
         icon: "⚡",
-        featured: true
+        featured: true,
+        tag: "MAIN SHOWCASE",
+        tagColor: "text-purple-400",
     },
     {
-        title: "OS Mode",
-        subtitle: "Disk Scheduling",
-        description: "Pure operating system simulation. Visualize FCFS and SSTF disk scheduling algorithms with head movement animations.",
+        title: "OS I/O Lab",
+        subtitle: "Physics Simulation",
+        description: "Full I/O simulation with rotational latency, seek time physics, HDD/SSD/NVMe comparison, page fault simulation, and throughput analysis.",
         href: "/os",
         gradient: "from-green-500/20 to-emerald-500/20",
         border: "border-green-500/30",
-        icon: "💾"
-    }
+        icon: "💿",
+        tag: "PHYSICS ENGINE",
+        tagColor: "text-green-400",
+    },
+];
+
+const stats = [
+    { label: "Algorithms", value: "7+", desc: "FCFS, SSTF, SCAN, Naive, KMP, Rabin-Karp, Boyer-Moore" },
+    { label: "Metrics", value: "15+", desc: "Seek time, rotation delay, throughput, page faults..." },
+    { label: "Storage Types", value: "3", desc: "HDD (7200 RPM), SSD (SATA), NVMe (PCIe 4.0)" },
 ];
 
 export default function ModeSelection() {
@@ -86,8 +98,11 @@ export default function ModeSelection() {
                         exit={{ opacity: 0 }}
                     >
                         <h1 ref={textRef} className="text-5xl sm:text-6xl md:text-9xl font-black text-transparent bg-clip-text bg-gradient-to-br from-blue-400 to-purple-500 tracking-widest uppercase">
-                            ils
+                            NGILP
                         </h1>
+                        <p className="text-xs sm:text-sm font-mono text-gray-600 mt-3 tracking-[0.3em] uppercase">
+                            Next Generation Interactive Learning Platform
+                        </p>
                         <div className="absolute bottom-12 sm:bottom-16 text-gray-500 font-mono text-2xl md:text-4xl text-transparent bg-clip-text bg-gradient-to-r from-gray-400 to-gray-600">
                             <span ref={countRef}>0</span>
                         </div>
@@ -105,17 +120,37 @@ export default function ModeSelection() {
                         initial={{ opacity: 0, y: -20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.6 }}
-                        className="text-center mb-10 sm:mb-16 relative z-10"
+                        className="text-center mb-10 sm:mb-12 relative z-10"
                     >
                         <div className="inline-block mb-4 px-3 py-1 rounded-full border border-white/10 bg-white/5 backdrop-blur-sm text-sm font-mono text-blue-400">
-                            INTERACTIVE LEARNING PLATFORM
+                            I/O SIMULATION & OPTIMIZATION LAB
                         </div>
                         <h1 className="text-3xl sm:text-4xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white via-blue-100 to-gray-400 tracking-tight mb-4">
                             Choose Learning Mode
                         </h1>
                         <p className="text-gray-400 text-base sm:text-lg max-w-2xl mx-auto">
-                            Select a dedicated environment to focus on specific algorithm concepts or explore the full integrated simulation system.
+                            Active, empirically guided discovery. Break systems virtually, observe performance bottlenecks,
+                            and learn optimal solutions through quantifiable data.
                         </p>
+                    </motion.div>
+
+                    {/* Stats bar */}
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.5, delay: 0.15 }}
+                        className="flex flex-wrap items-center justify-center gap-6 sm:gap-10 mb-10 relative z-10"
+                    >
+                        {stats.map((stat, i) => (
+                            <div key={i} className="text-center group cursor-default">
+                                <p className="text-2xl sm:text-3xl font-black font-mono text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300">
+                                    {stat.value}
+                                </p>
+                                <p className="text-[10px] font-mono text-[var(--text-muted)] uppercase tracking-wider mt-1">
+                                    {stat.label}
+                                </p>
+                            </div>
+                        ))}
                     </motion.div>
 
                     <motion.div
@@ -143,9 +178,9 @@ export default function ModeSelection() {
                                             </div>
 
                                             <div className="mt-auto">
-                                                {mode.featured && (
-                                                    <div className="text-[10px] font-bold tracking-wider text-purple-400 mb-2 uppercase">
-                                                        Main Showcase
+                                                {mode.tag && (
+                                                    <div className={`text-[10px] font-bold tracking-wider ${mode.tagColor} mb-2 uppercase`}>
+                                                        {mode.tag}
                                                     </div>
                                                 )}
                                                 <h2 className="text-xl sm:text-2xl font-bold text-white mb-1 group-hover:text-blue-300 transition-colors">
@@ -167,6 +202,20 @@ export default function ModeSelection() {
                                 </Link>
                             </motion.div>
                         ))}
+                    </motion.div>
+
+                    {/* Architecture badge */}
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 1 }}
+                        className="mt-10 text-center relative z-10"
+                    >
+                        <div className="inline-flex items-center gap-3 px-4 py-2 rounded-xl border border-white/5 bg-white/[0.02] backdrop-blur-sm">
+                            <span className="text-[9px] font-mono text-[var(--text-muted)] tracking-wider">
+                                Next.js · TypeScript · FastAPI · WebSockets · Zustand · Canvas 2D
+                            </span>
+                        </div>
                     </motion.div>
                 </div>
             )}
